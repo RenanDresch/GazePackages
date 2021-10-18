@@ -65,17 +65,17 @@ namespace Gaze.MVVM.Model
         
         /// <summary>
         /// Binds an action to this Reactive Stack so it's invoked whenever a new item is pushed into the stack.
-        /// If the IObservableMonoBehaviour is correctly setup, this binding avoids memory leaks.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
-        /// <param name="observableMonoBehaviour">The observable GameObject that owns the target action.</param>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when a new item gets pushed into the stack.
         /// The first argument represents the new pushed item, the second one represents the former stack top</param>
-        public void SafeBindOnPushAction(IObservableMonoBehaviour observableMonoBehaviour, UnityAction<T,T> action)
+        public void SafeBindOnPushAction(IDestroyable destroyable, UnityAction<T,T> action)
         {
-            if (observableMonoBehaviour != null)
+            if (destroyable != null)
             {
                 onPush.AddListener(action);
-                observableMonoBehaviour.OnDestroyEvent.AddListener(() => onPush.RemoveListener(action));
+                destroyable.OnDestroyEvent.AddListener(() => onPush.RemoveListener(action));
             }
             else
             {
@@ -85,17 +85,17 @@ namespace Gaze.MVVM.Model
         
         /// <summary>
         /// Binds an action to this Reactive Stack so it's invoked whenever a new item is popped from the stack.
-        /// If the IObservableMonoBehaviour is correctly setup, this binding avoids memory leaks.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
-        /// <param name="observableMonoBehaviour">The observable GameObject that owns the target action.</param>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when an item gets popped from the stack.
         /// The first argument represents the popped item, the second one represents the new stack top</param>
-        public void SafeBindOnPopAction(IObservableMonoBehaviour observableMonoBehaviour, UnityAction<T,T> action)
+        public void SafeBindOnPopAction(IDestroyable destroyable, UnityAction<T,T> action)
         {
-            if (observableMonoBehaviour != null)
+            if (destroyable != null)
             {
                 onPop.AddListener(action);
-                observableMonoBehaviour.OnDestroyEvent.AddListener(() => onPop.RemoveListener(action));
+                destroyable.OnDestroyEvent.AddListener(() => onPop.RemoveListener(action));
             }
             else
             {
@@ -105,16 +105,16 @@ namespace Gaze.MVVM.Model
         
         /// <summary>
         /// Binds an action to this Reactive Stack so it's invoked whenever the stack gets empty.
-        /// If the IObservableMonoBehaviour is correctly setup, this binding avoids memory leaks.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
-        /// <param name="observableMonoBehaviour">The observable GameObject that owns the target action.</param>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute after the last item gets popped from the stack.</param>
-        public void SafeBindOnClearAction(IObservableMonoBehaviour observableMonoBehaviour, UnityAction action)
+        public void SafeBindOnClearAction(IDestroyable destroyable, UnityAction action)
         {
-            if (observableMonoBehaviour != null)
+            if (destroyable != null)
             {
                 onClear.AddListener(action);
-                observableMonoBehaviour.OnDestroyEvent.AddListener(() => onClear.RemoveListener(action));
+                destroyable.OnDestroyEvent.AddListener(() => onClear.RemoveListener(action));
             }
             else
             {

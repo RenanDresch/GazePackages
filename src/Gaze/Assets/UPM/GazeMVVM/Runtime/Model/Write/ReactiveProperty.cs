@@ -24,16 +24,16 @@ namespace Gaze.MVVM.Model
         
         /// <summary>
         /// Binds another reactive property to this, so when this property change triggers the target one triggers as well.
-        /// If the IObservableMonoBehaviour is correctly setup, this binding avoids memory leaks.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
-        /// <param name="observableMonoBehaviour">The observable GameObject that owns the target ReactiveProperty.</param>
+        /// <param name="destroyable">The destroyable object that owns the target ReactiveProperty.</param>
         /// <param name="targetReactiveProperty">The ReactiveProperty that will bind to this one.</param>
-        public void SafeBindToReactiveProperty(IObservableMonoBehaviour observableMonoBehaviour, ReactiveProperty<T> targetReactiveProperty)
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, ReactiveProperty<T> targetReactiveProperty)
         {
-            if (observableMonoBehaviour != null)
+            if (destroyable != null)
             {
                 Value = targetReactiveProperty.Value;
-                targetReactiveProperty.SafeBindOnChangeAction(observableMonoBehaviour, SetValue);
+                targetReactiveProperty.SafeBindOnChangeAction(destroyable, SetValue);
             }
             else
             {
@@ -43,14 +43,14 @@ namespace Gaze.MVVM.Model
 
         /// <summary>
         /// Binds an action to this Reactive Property so it's invoked whenever the OnChange triggers.
-        /// If the IObservableMonoBehaviour is correctly setup, this binding avoids memory leaks.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
-        /// <param name="observableMonoBehaviour">The observable GameObject that owns the target action.</param>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when this property changes.</param>
         /// <param name="invokeOnBind">Should the action be invoked right after binding?</param>
-        public void SafeBindOnChangeAction(IObservableMonoBehaviour observableMonoBehaviour, UnityAction<T> action, bool invokeOnBind = true)
+        public void SafeBindOnChangeAction(IDestroyable destroyable, UnityAction<T> action, bool invokeOnBind = true)
         {
-            if (observableMonoBehaviour != null)
+            if (destroyable != null)
             {
                 OnPropertyChangeEvent.AddListener(action);
                 if (invokeOnBind)
@@ -58,7 +58,7 @@ namespace Gaze.MVVM.Model
                     OnPropertyChangeEvent.Invoke(Value);
                 }
 
-                observableMonoBehaviour.OnDestroyEvent.AddListener(() => OnPropertyChangeEvent.RemoveListener(action));
+                destroyable.OnDestroyEvent.AddListener(() => OnPropertyChangeEvent.RemoveListener(action));
             }
             else
             {

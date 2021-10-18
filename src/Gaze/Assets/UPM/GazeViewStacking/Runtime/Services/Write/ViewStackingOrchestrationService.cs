@@ -10,19 +10,19 @@ namespace Gaze.ViewStacking.Services
     public class ViewStackingOrchestrationService
     {
         readonly ViewStackServiceOrchestrationModel viewStackServiceOrchestrationModel;
-        readonly IObservableMonoBehaviour observableMonoBehaviour;
+        readonly IDestroyable destroyable;
         
-        public ViewStackingOrchestrationService(IObservableMonoBehaviour observableMonoBehaviour, ViewStackServiceOrchestrationModel viewStackServiceOrchestrationModel)
+        public ViewStackingOrchestrationService(IDestroyable destroyable, ViewStackServiceOrchestrationModel viewStackServiceOrchestrationModel)
         {
-            this.observableMonoBehaviour = observableMonoBehaviour;
+            this.destroyable = destroyable;
             this.viewStackServiceOrchestrationModel = viewStackServiceOrchestrationModel;
             SetupStackListeners();
         }
 
         void SetupStackListeners()
         {
-            viewStackServiceOrchestrationModel.ViewStackingServices.SafeBindOnPushAction(observableMonoBehaviour, OnPushNewViewStackingService);
-            viewStackServiceOrchestrationModel.ViewStackingServices.SafeBindOnPopAction(observableMonoBehaviour, OnPopViewStackingService);
+            viewStackServiceOrchestrationModel.ViewStackingServices.SafeBindOnPushAction(destroyable, OnPushNewViewStackingService);
+            viewStackServiceOrchestrationModel.ViewStackingServices.SafeBindOnPopAction(destroyable, OnPopViewStackingService);
         }
         
         void OnPushNewViewStackingService(IViewStackingService newStackingService, IViewStackingService formerTopStackingService)
@@ -32,7 +32,7 @@ namespace Gaze.ViewStacking.Services
                 formerTopStackingService.IsActiveStack.Value = false;
             }
             newStackingService.IsActiveStack.Value = true;
-            newStackingService.ViewStack.SafeBindOnClearAction(observableMonoBehaviour, OnViewStackClear);
+            newStackingService.ViewStack.SafeBindOnClearAction(destroyable, OnViewStackClear);
         }
         
         void OnPopViewStackingService(IViewStackingService poppedViewStackingService, IViewStackingService newTopViewStackingService)

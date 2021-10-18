@@ -19,19 +19,19 @@ namespace Gaze.ViewStacking.Services
 
         readonly Transform stackRoot;
         
-        public ViewStackingService(IObservableMonoBehaviour observableMonoBehaviour, Transform stackRoot)
+        public ViewStackingService(IDestroyable destroyable, Transform stackRoot)
         {
             this.stackRoot = stackRoot;
             ViewStack = new ReactiveStack<IStackableViewModel>();
-            SetupStackListeners(observableMonoBehaviour);
+            SetupStackListeners(destroyable);
         }
 
-        void SetupStackListeners(IObservableMonoBehaviour observableMonoBehaviour)
+        void SetupStackListeners(IDestroyable destroyable)
         {
-            IsActiveStack.SafeBindOnChangeAction(observableMonoBehaviour, OnStackStateChange, false);
-            ViewStack.SafeBindOnPushAction(observableMonoBehaviour, OnPushView);
-            ViewStack.SafeBindOnPopAction(observableMonoBehaviour, OnPopView);
-            ViewStack.SafeBindOnClearAction(observableMonoBehaviour, OnStackClear);
+            IsActiveStack.SafeBindOnChangeAction(destroyable, OnStackStateChange, false);
+            ViewStack.SafeBindOnPushAction(destroyable, OnPushView);
+            ViewStack.SafeBindOnPopAction(destroyable, OnPopView);
+            ViewStack.SafeBindOnClearAction(destroyable, OnStackClear);
         }
         
         async void OnStackClear()

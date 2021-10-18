@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 namespace Gaze.Utilities
 {
-    public class ObservableMonoBehaviour : MonoBehaviour, IObservableMonoBehaviour
+    public class ObservableMonoBehaviour : MonoBehaviour, IAwakeable, IStartable, IEnableable, IDestroyable
     {
         public UnityEvent OnAwakeEvent { get; } = new UnityEvent();
         public UnityEvent OnStartEvent { get; } = new UnityEvent();

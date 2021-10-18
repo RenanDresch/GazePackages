@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gaze.MVVM.View.Read
 {
-    public interface IView : IObservableMonoBehaviour
+    public interface IView : IDestroyable
     {
         GameObject GameObject { get; }
         Transform Parent { get; set; }
