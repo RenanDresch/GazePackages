@@ -23,5 +23,7 @@
     "name": "Renan Dresch",
     "email": "renandreschmartins@gmail.com",
     "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeViewStacking"
-  }
+  },
+  "license": "MIT",
+  "category": "Architechture"
 }

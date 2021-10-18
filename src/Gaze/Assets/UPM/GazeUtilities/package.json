@@ -14,5 +14,7 @@
     "name": "Renan Dresch",
     "email": "renandreschmartins@gmail.com",
     "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeUtilities"
-  }
+  },
+  "license": "MIT",
+  "category": "General"
 }
