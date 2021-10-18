@@ -1,0 +1,19 @@
+{
+    "name": "Gaze.MVVM.View",
+    "rootNamespace": "Gaze.MVVM.View",
+    "references": [
+        "Gaze.Utilities",
+        "UniTask",
+        "Gaze.MVVM.ViewModel",
+        "Gaze.MVVM.View.Read"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

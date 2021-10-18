@@ -1,0 +1,29 @@
+{
+  "name": "com.gaze.viewstacking",
+  "version": "0.0.1",
+  "displayName": "Gaze View Stacking",
+  "description": "This is a view stacking framework based on Gaze MVVM package.",
+  "unity": "2019",
+  "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+    "com.gaze.utilities": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeUtilities",
+    "com.gaze.mvvm": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeMVVM"
+  },
+  "keywords": [
+    "gaze",
+    "mvvm",
+    "architecture",
+    "view",
+    "stack",
+    "stacking",
+    "vistack",
+    "vistacking"
+  ],
+  "author": {
+    "name": "Renan Dresch",
+    "email": "renandreschmartins@gmail.com",
+    "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeViewStacking"
+  },
+  "license": "MIT",
+  "category": "Architechture"
+}

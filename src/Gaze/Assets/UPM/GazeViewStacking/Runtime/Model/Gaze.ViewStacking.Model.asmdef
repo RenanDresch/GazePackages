@@ -1,0 +1,19 @@
+{
+    "name": "Gaze.ViewStacking.Model",
+    "rootNamespace": "Gaze.ViewStacking.Model",
+    "references": [
+        "Gaze.MVVM.Model",
+        "Gaze.MVVM.ViewModel.Read",
+        "Gaze.ViewStacking.ViewModel.Read",
+        "Gaze.ViewStacking.Services.Read"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
