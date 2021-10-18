@@ -1,0 +1,18 @@
+{
+  "name": "com.gaze.utilities",
+  "version": "0.1.0",
+  "displayName": "Gaze Utilities",
+  "description": "This is a compilation of useful code I use as base for my other (Gaze) packages.",
+  "unity": "2019",
+  "dependencies": {
+  },
+  "keywords": [
+    "gaze",
+    "utilities"
+  ],
+  "author": {
+    "name": "Renan Dresch",
+    "email": "renandreschmartins@gmail.com",
+    "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeUtilities"
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "name": "Gaze.MVVM.Model.Read",
+    "rootNamespace": "Gaze.MVVM.Model.Read",
+    "references": [
+        "Gaze.Utilities"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
