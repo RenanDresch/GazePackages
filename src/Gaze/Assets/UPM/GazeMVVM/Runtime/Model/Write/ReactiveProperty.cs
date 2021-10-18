@@ -1,7 +1,7 @@
+using System;
 using Gaze.MVVM.Model.Read;
 using Gaze.Utilities;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Gaze.MVVM.Model
 {
@@ -15,7 +15,7 @@ namespace Gaze.MVVM.Model
             get => currentValue;
             set => SetProperty(ref currentValue, value);
         }
-        protected UnityEvent<T> OnPropertyChangeEvent { get; } = new UnityEvent<T>();
+        protected Action<T> OnPropertyChangeEvent { get; set; }
 
         public ReactiveProperty(T value = default)
         {
@@ -48,17 +48,17 @@ namespace Gaze.MVVM.Model
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when this property changes.</param>
         /// <param name="invokeOnBind">Should the action be invoked right after binding?</param>
-        public void SafeBindOnChangeAction(IDestroyable destroyable, UnityAction<T> action, bool invokeOnBind = true)
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true)
         {
             if (destroyable != null)
             {
-                OnPropertyChangeEvent.AddListener(action);
+                OnPropertyChangeEvent += action;
                 if (invokeOnBind)
                 {
                     OnPropertyChangeEvent.Invoke(Value);
                 }
 
-                destroyable.OnDestroyEvent.AddListener(() => OnPropertyChangeEvent.RemoveListener(action));
+                destroyable.OnDestroyEvent.AddListener(() => OnPropertyChangeEvent -= action);
             }
             else
             {
@@ -79,17 +79,9 @@ namespace Gaze.MVVM.Model
         /// Unbinds an OnChange Action from this Reactive Property. 
         /// </summary>
         /// <param name="action">The action to unbind</param>
-        public void UnbindOnChangeAction(UnityAction<T> action)
+        public void UnbindOnChangeAction(Action<T> action)
         {
-            OnPropertyChangeEvent.RemoveListener(action);
-        }
-        
-        /// <summary>
-        /// Unbind every ReactiveProperties and/or actions bound to this one.
-        /// </summary>
-        public void UnbindAll()
-        {
-            OnPropertyChangeEvent.RemoveAllListeners();
+            OnPropertyChangeEvent -= action;
         }
 
         /// <summary>

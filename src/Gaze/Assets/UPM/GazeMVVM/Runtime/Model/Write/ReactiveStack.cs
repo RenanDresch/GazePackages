@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Gaze.Utilities;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Gaze.MVVM.Model
 {
@@ -10,9 +10,9 @@ namespace Gaze.MVVM.Model
     {
         Stack<T> internalStack;
 
-        readonly UnityEvent<T,T> onPush = new UnityEvent<T, T>();
-        readonly UnityEvent<T,T> onPop = new UnityEvent<T, T>();
-        readonly UnityEvent onClear = new UnityEvent();
+        Action<T,T> onPush;
+        Action<T,T> onPop;
+        Action onClear;
         
         public ReactiveStack(T topItem = default)
         {
@@ -70,12 +70,12 @@ namespace Gaze.MVVM.Model
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when a new item gets pushed into the stack.
         /// The first argument represents the new pushed item, the second one represents the former stack top</param>
-        public void SafeBindOnPushAction(IDestroyable destroyable, UnityAction<T,T> action)
+        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T,T> action)
         {
             if (destroyable != null)
             {
-                onPush.AddListener(action);
-                destroyable.OnDestroyEvent.AddListener(() => onPush.RemoveListener(action));
+                onPush += action;
+                destroyable.OnDestroyEvent.AddListener(() => onPush -= action);
             }
             else
             {
@@ -90,12 +90,12 @@ namespace Gaze.MVVM.Model
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when an item gets popped from the stack.
         /// The first argument represents the popped item, the second one represents the new stack top</param>
-        public void SafeBindOnPopAction(IDestroyable destroyable, UnityAction<T,T> action)
+        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T,T> action)
         {
             if (destroyable != null)
             {
-                onPop.AddListener(action);
-                destroyable.OnDestroyEvent.AddListener(() => onPop.RemoveListener(action));
+                onPop += action;
+                destroyable.OnDestroyEvent.AddListener(() => onPop -= action);
             }
             else
             {
@@ -109,12 +109,12 @@ namespace Gaze.MVVM.Model
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute after the last item gets popped from the stack.</param>
-        public void SafeBindOnClearAction(IDestroyable destroyable, UnityAction action)
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action)
         {
             if (destroyable != null)
             {
-                onClear.AddListener(action);
-                destroyable.OnDestroyEvent.AddListener(() => onClear.RemoveListener(action));
+                onClear += action;
+                destroyable.OnDestroyEvent.AddListener(() => onClear -= action);
             }
             else
             {
