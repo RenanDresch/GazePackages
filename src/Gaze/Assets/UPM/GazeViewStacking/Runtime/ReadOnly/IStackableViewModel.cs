@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Gaze.MVVM.ReadOnly.ViewStacking
 {
-    public interface IStackableViewModel : IViewModel
+    public interface IStackableViewModel : IPresentableViewModel
     {
         public Transform AttachParent { get; }
     }

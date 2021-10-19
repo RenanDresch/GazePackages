@@ -1,12 +1,11 @@
 using Cysharp.Threading.Tasks;
-using Gaze.MVVM.ReadOnly;
 using Gaze.MVVM.ReadOnly.ViewStacking;
 using UnityEngine;
 
 namespace Gaze.MVVM.ViewStacking
 {
     [System.Serializable]
-    public abstract class StackableViewModel : ViewModel, IStackableViewModel
+    public abstract class StackableViewModel : PresentableViewModel, IStackableViewModel
     {
         [SerializeField]
         protected ViewStackingOrchestrationUseCase viewStackingOrchestrationUseCase;
@@ -15,10 +14,10 @@ namespace Gaze.MVVM.ViewStacking
         Transform attachParent;
 
         public Transform AttachParent => attachParent;
-        
-        public override async UniTask Setup(IView view)
+
+        public override async UniTask SetupPresentableView(IPresentableView presentableView)
         {
-            await base.Setup(view);
+            await base.SetupPresentableView(presentableView);
             viewStackingOrchestrationUseCase.PushView(this);
         }
     }

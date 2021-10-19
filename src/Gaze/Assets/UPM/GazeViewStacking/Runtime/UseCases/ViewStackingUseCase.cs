@@ -1,6 +1,5 @@
 using System.Linq;
 using Cysharp.Threading.Tasks;
-using Gaze.MVVM.ReadOnly;
 using Gaze.MVVM.ReadOnly.ViewStacking;
 using Gaze.Utilities;
 using UnityEngine;
@@ -15,9 +14,8 @@ namespace Gaze.MVVM.ViewStacking
     {
         [SerializeField]
         ViewStackServiceOrchestrationModel viewStackServiceOrchestrationModel;
-        
-        ReactiveStack<IStackableViewModel> viewStack;
-        public ReactiveStack<IStackableViewModel> ViewStack => viewStack;
+
+        public ReactiveStack<IStackableViewModel> ViewStack { get; private set; }
 
         public Transform StackRoot { get; private set; }
 
@@ -28,7 +26,7 @@ namespace Gaze.MVVM.ViewStacking
         {
             StackRoot = Instantiate(viewStackServiceOrchestrationModel.ViewStackCanvasPrefab).transform;
             this.stackObject = stackObject;
-            viewStack = new ReactiveStack<IStackableViewModel>();
+            ViewStack = new ReactiveStack<IStackableViewModel>();
             SetupStackListeners();
         }
 
@@ -54,8 +52,8 @@ namespace Gaze.MVVM.ViewStacking
         {
             if (!stackDestroyed)
             {
-                var stackViews = StackRoot.GetComponentsInChildren<IView>();
-                var dismissTasks = Enumerable.Select(stackViews, view => view.Dismiss()).ToList();
+                var stackViews = StackRoot.GetComponentsInChildren<IPresentableView>();
+                var dismissTasks = Enumerable.Select(stackViews, presentableView => presentableView.Dismiss()).ToList();
                 await dismissTasks;
                 if (StackRoot)
                 {

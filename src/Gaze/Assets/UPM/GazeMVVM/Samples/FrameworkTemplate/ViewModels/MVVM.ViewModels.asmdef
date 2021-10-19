@@ -1,9 +1,11 @@
 {
-    "name": "Gaze.MVVM.ReadOnly.ViewStacking",
-    "rootNamespace": "Gaze.MVVM.ReadOnly.ViewStacking",
+    "name": "MVVM.ViewModels",
+    "rootNamespace": "MVVM.ViewModels",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
-        "GUID:06a73997bbb964722968a911206ca27f"
+        "GUID:f2edf412b1a484b7383fa43ff3be40a1",
+        "GUID:434c5515f407a49b38010c8a510688ae",
+        "GUID:06a73997bbb964722968a911206ca27f",
+        "GUID:9ffddb1ba72aa4f86aa38f3281e104be"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
