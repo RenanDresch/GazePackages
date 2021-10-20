@@ -1,45 +1,49 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Gaze.Utilities
 {
     public class ObservableMonoBehaviour : MonoBehaviour, IAwakeable, IStartable, IEnableable, IDestroyable
     {
-        public UnityEvent OnAwakeEvent { get; } = new UnityEvent();
-        public UnityEvent OnStartEvent { get; } = new UnityEvent();
-        public UnityEvent OnEnableEvent { get; } = new UnityEvent();
-        public UnityEvent OnDisableEvent { get; } = new UnityEvent();
-        public UnityEvent OnDestroyEvent { get; } = new UnityEvent();
+        public event Action OnAwakeEvent;
+        public event Action OnStartEvent;
+        public event Action OnEnableEvent;
+        public event Action OnDisableEvent;
+        public event Action OnDestroyEvent;
         
         protected virtual void Awake()
         {
-            OnAwakeEvent.Invoke();
+            OnAwakeEvent?.Invoke();
         }
         
         protected virtual void Start()
         {
-            OnStartEvent.Invoke();
+            OnStartEvent?.Invoke();
         }
         
         protected virtual void OnEnable()
         {
-            OnEnableEvent.Invoke();
+            OnEnableEvent?.Invoke();
         }
         
         protected virtual void OnDisable()
         {
-            OnDisableEvent.Invoke();
+            OnDisableEvent?.Invoke();
         }
         
         protected virtual void OnDestroy()
         {
-            OnDestroyEvent.Invoke();
-            
-            OnAwakeEvent.RemoveAllListeners();
-            OnStartEvent.RemoveAllListeners();
-            OnEnableEvent.RemoveAllListeners();
-            OnDisableEvent.RemoveAllListeners();
-            OnDestroyEvent.RemoveAllListeners();
+            OnDestroyEvent?.Invoke();
+            ReleaseEvents();
+        }
+
+        void ReleaseEvents()
+        {
+            OnAwakeEvent = null;
+            OnStartEvent = null;
+            OnEnableEvent = null;
+            OnDisableEvent = null;
+            OnDestroyEvent = null;
         }
     }
 }

@@ -1,24 +1,35 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Gaze.Utilities
 {
     public class ObservableScriptableObject : ScriptableObject, IDestroyable, IEnableable
     {
-        public UnityEvent OnDestroyEvent { get; } = new UnityEvent();
-        public UnityEvent OnEnableEvent { get; } = new UnityEvent();
-        public UnityEvent OnDisableEvent { get; } = new UnityEvent();
+        public event Action OnDestroyEvent;
+        public event Action OnEnableEvent;
+        public event Action OnDisableEvent;
+        
         protected virtual void OnEnable()
         {
-            OnEnableEvent.Invoke();
+            OnEnableEvent?.Invoke();
         }
+        
         protected virtual void OnDisable()
         {
-            OnDisableEvent.Invoke();
+            OnDisableEvent?.Invoke();
         }
+        
         protected virtual void OnDestroy()
         {
-            OnDestroyEvent.Invoke();
+            OnDestroyEvent?.Invoke();
+            ReleaseEvents();
+        }
+        
+        void ReleaseEvents()
+        {
+            OnEnableEvent = null;
+            OnDisableEvent = null;
+            OnDestroyEvent = null;
         }
     }
 }

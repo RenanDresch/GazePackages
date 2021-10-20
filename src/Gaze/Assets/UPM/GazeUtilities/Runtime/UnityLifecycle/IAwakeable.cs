@@ -1,9 +1,9 @@
-using UnityEngine.Events;
+using System;
 
 namespace Gaze.Utilities
 {
     public interface IAwakeable
     {
-        public UnityEvent OnAwakeEvent { get; }
+        public event Action OnAwakeEvent;
     }
 }

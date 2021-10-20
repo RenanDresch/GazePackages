@@ -9,10 +9,14 @@ namespace Gaze.MVVM.ViewStacking
         [SerializeField]
         ViewStackingUseCase viewStackingUseCase;
 
-        public ViewStackingUseCase GetViewStackingUseCase(IDestroyable stackObject)
+        [SerializeField]
+        GameObject viewStackCanvasPrefab;
+        
+        public ViewStackingUseCase GetViewStackingUseCase(IDestroyable stackOwnerObject)
         {
+            var newStackCanvas = Object.Instantiate(viewStackCanvasPrefab).transform;
             var newUseCaseInstance = Object.Instantiate(viewStackingUseCase);
-            newUseCaseInstance.SetupInstance(stackObject);
+            newUseCaseInstance.SetupInstance(stackOwnerObject, newStackCanvas);
             return newUseCaseInstance;
         }
     }

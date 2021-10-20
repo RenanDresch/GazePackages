@@ -76,7 +76,7 @@ namespace Gaze.MVVM
             if (destroyable != null)
             {
                 onPush += action;
-                destroyable.OnDestroyEvent.AddListener(() => onPush -= action);
+                destroyable.OnDestroyEvent += () => onPush -= action;
             }
             else
             {
@@ -96,7 +96,7 @@ namespace Gaze.MVVM
             if (destroyable != null)
             {
                 onPop += action;
-                destroyable.OnDestroyEvent.AddListener(() => onPop -= action);
+                destroyable.OnDestroyEvent += () => onPop -= action;
             }
             else
             {
@@ -115,7 +115,7 @@ namespace Gaze.MVVM
             if (destroyable != null)
             {
                 onClear += action;
-                destroyable.OnDestroyEvent.AddListener(() => onClear -= action);
+                destroyable.OnDestroyEvent += () => onClear -= action;
             }
             else
             {

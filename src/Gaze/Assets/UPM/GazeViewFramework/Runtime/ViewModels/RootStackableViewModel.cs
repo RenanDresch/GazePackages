@@ -12,6 +12,7 @@ namespace Gaze.MVVM.ViewStacking
     {
         [SerializeField]
         ViewStackFactory viewStackFactory;
+        
         public override async UniTask Setup(IView view)
         {
             var newViewStackingService = viewStackFactory.GetViewStackingUseCase(view);

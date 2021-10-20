@@ -1,10 +1,10 @@
-using UnityEngine.Events;
+using System;
 
 namespace Gaze.Utilities
 {
     public interface IEnableable
     {
-        public UnityEvent OnEnableEvent { get; }
-        public UnityEvent OnDisableEvent { get; }
+        public event Action OnEnableEvent;
+        public event Action OnDisableEvent;
     }
 }

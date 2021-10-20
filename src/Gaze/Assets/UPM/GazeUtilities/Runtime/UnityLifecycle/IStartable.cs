@@ -1,9 +1,9 @@
-using UnityEngine.Events;
+using System;
 
 namespace Gaze.Utilities
 {
     public interface IStartable
     {
-        public UnityEvent OnStartEvent { get; }
+        public event Action OnStartEvent;
     }
 }

@@ -11,7 +11,7 @@ namespace Gaze.MVVM.ViewStacking
     public class ViewStackingOrchestrationUseCase : ObservableScriptableObject
     {
         [SerializeField]
-        ViewStackServiceOrchestrationModel viewStackServiceOrchestrationModel;
+        ViewStackOrchestrationModel viewStackOrchestrationModel;
 
         protected override void OnEnable()
         {
@@ -21,41 +21,41 @@ namespace Gaze.MVVM.ViewStacking
 
         void SetupStackListeners()
         {
-            viewStackServiceOrchestrationModel.ViewStackingServices.SafeBindOnPushAction(this, OnPushNewViewStackingService);
-            viewStackServiceOrchestrationModel.ViewStackingServices.SafeBindOnPopAction(this, OnPopViewStackingService);
+            viewStackOrchestrationModel.ViewStackingServices.SafeBindOnPushAction(this, OnPushNewViewStackingService);
+            viewStackOrchestrationModel.ViewStackingServices.SafeBindOnPopAction(this, OnPopViewStackingService);
         }
         
         void OnPushNewViewStackingService(ViewStackingUseCase newStackingUseCase, ViewStackingUseCase formerTopStackingUseCase)
         {
-            viewStackServiceOrchestrationModel.ActiveStackingService.Value = newStackingUseCase;
+            viewStackOrchestrationModel.ActiveStackingService.Value = newStackingUseCase;
             newStackingUseCase.ViewStack.SafeBindOnClearAction(this, OnViewStackClear);
         }
         
         void OnPopViewStackingService(ViewStackingUseCase poppedViewStackingUseCase, ViewStackingUseCase newTopViewStackingUseCase)
         {
-            viewStackServiceOrchestrationModel.ActiveStackingService.Value = newTopViewStackingUseCase;
+            viewStackOrchestrationModel.ActiveStackingService.Value = newTopViewStackingUseCase;
         }
         
         void OnViewStackClear()
         {
-            viewStackServiceOrchestrationModel.ViewStackingServices.Pop();
+            viewStackOrchestrationModel.ViewStackingServices.Pop();
         }
 
         public void PushStack(ViewStackingUseCase viewStackingUseCase)
         {
-            viewStackServiceOrchestrationModel.ViewStackingServices.Push(viewStackingUseCase);
+            viewStackOrchestrationModel.ViewStackingServices.Push(viewStackingUseCase);
         }
         
         public void PushView(IStackableViewModel stackableViewModel)
         {
-            viewStackServiceOrchestrationModel.ActiveStackingService.Value.ViewStack.Push(stackableViewModel);
+            viewStackOrchestrationModel.ActiveStackingService.Value.ViewStack.Push(stackableViewModel);
         }
         
         public void PopView()
         {
-            if (viewStackServiceOrchestrationModel.ViewStackingServices.Count > 1 || viewStackServiceOrchestrationModel.ViewStackingServices.Peek().ViewStack.Count > 1)
+            if (viewStackOrchestrationModel.ViewStackingServices.Count > 1 || viewStackOrchestrationModel.ViewStackingServices.Peek().ViewStack.Count > 1)
             {
-                viewStackServiceOrchestrationModel.ActiveStackingService.Value.ViewStack.Pop();
+                viewStackOrchestrationModel.ActiveStackingService.Value.ViewStack.Pop();
             }
         }
     }

@@ -1,9 +1,9 @@
-using UnityEngine.Events;
+using System;
 
 namespace Gaze.Utilities
 {
     public interface IDestroyable
     {
-        public UnityEvent OnDestroyEvent { get; }
+        public event Action OnDestroyEvent;
     }
 }

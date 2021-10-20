@@ -58,7 +58,7 @@ namespace Gaze.MVVM
                     OnPropertyChangeEvent?.Invoke(Value);
                 }
 
-                destroyable.OnDestroyEvent.AddListener(() => OnPropertyChangeEvent -= action);
+                destroyable.OnDestroyEvent += () => OnPropertyChangeEvent -= action;
             }
             else
             {

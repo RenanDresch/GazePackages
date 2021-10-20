@@ -13,8 +13,8 @@ namespace Gaze.MVVM
         [SerializeField]
         T viewModel;
         
-        readonly CancellationTokenSource DestructionCancellationTokenSource = new CancellationTokenSource();
-        protected CancellationToken DestructionCancellationToken => DestructionCancellationTokenSource.Token;
+        readonly CancellationTokenSource destructionCancellationTokenSource = new CancellationTokenSource();
+        protected CancellationToken DestructionCancellationToken => destructionCancellationTokenSource.Token;
         
         public T ViewModel => viewModel;
         public GameObject GameObject => this ? gameObject : null;
@@ -27,12 +27,12 @@ namespace Gaze.MVVM
         protected override void Awake()
         {
             base.Awake();
-            OnDestroyEvent?.AddListener(() =>
+            OnDestroyEvent += () =>
             {
-                DestructionCancellationTokenSource.Cancel();
-                DestructionCancellationTokenSource.Dispose();
-            });
-            UniTask.Create(BootstrapView).AttachExternalCancellation(DestructionCancellationTokenSource.Token);
+                destructionCancellationTokenSource.Cancel();
+                destructionCancellationTokenSource.Dispose();
+            };
+            UniTask.Create(BootstrapView).AttachExternalCancellation(destructionCancellationTokenSource.Token);
         }
 
         async UniTask BootstrapView()

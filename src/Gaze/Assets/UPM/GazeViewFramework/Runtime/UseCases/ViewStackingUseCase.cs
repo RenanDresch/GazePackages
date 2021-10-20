@@ -13,39 +13,39 @@ namespace Gaze.MVVM.ViewStacking
     public class ViewStackingUseCase : ScriptableObject
     {
         [SerializeField]
-        ViewStackServiceOrchestrationModel viewStackServiceOrchestrationModel;
+        ViewStackOrchestrationModel viewStackOrchestrationModel;
 
         public ReactiveStack<IStackableViewModel> ViewStack { get; private set; }
 
         public Transform StackRoot { get; private set; }
 
-        IDestroyable stackObject;
+        IDestroyable stackOwnerObject;
         bool stackDestroyed;
         
-        public void SetupInstance(IDestroyable stackObject)
+        public void SetupInstance(IDestroyable stackOwnerObject, Transform stackRoot)
         {
-            StackRoot = Instantiate(viewStackServiceOrchestrationModel.ViewStackCanvasPrefab).transform;
-            this.stackObject = stackObject;
+            this.stackOwnerObject = stackOwnerObject;
+            StackRoot = stackRoot;
             ViewStack = new ReactiveStack<IStackableViewModel>();
             SetupStackListeners();
         }
 
         void SetupStackListeners()
         {
-            stackObject.OnDestroyEvent.AddListener(OnStackDestroy);
-            viewStackServiceOrchestrationModel.ActiveStackingService.SafeBindOnChangeAction(stackObject, OnActiveStackChange);
-            ViewStack.SafeBindOnPushAction(stackObject, OnPushView);
-            ViewStack.SafeBindOnPopAction(stackObject, OnPopView);
-            ViewStack.SafeBindOnClearAction(stackObject, OnStackClear);
+            stackOwnerObject.OnDestroyEvent += OnStackOwnerDestroy;
+            viewStackOrchestrationModel.ActiveStackingService.SafeBindOnChangeAction(stackOwnerObject, OnActiveStackChange);
+            ViewStack.SafeBindOnPushAction(stackOwnerObject, OnPushView);
+            ViewStack.SafeBindOnPopAction(stackOwnerObject, OnPopView);
+            ViewStack.SafeBindOnClearAction(stackOwnerObject, OnStackClear);
         }
-        void OnStackDestroy()
+        void OnStackOwnerDestroy()
         {
             if (!stackDestroyed)
             {
                 OnStackClear();
             }
             Destroy(this);
-            stackObject.OnDestroyEvent.RemoveListener(OnStackDestroy);
+            stackOwnerObject.OnDestroyEvent -= OnStackOwnerDestroy;
         }
 
         async void OnStackClear()
