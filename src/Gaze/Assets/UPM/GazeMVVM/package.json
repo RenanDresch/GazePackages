@@ -5,8 +5,7 @@
   "description": "This is the base code required for implementing a solid MVVM architecture for Unity.",
   "unity": "2019.1",
   "dependencies": {
-    "com.cysharp.unitask": "2.2.5",
-    "com.gaze.utilities": "0.0.1"
+    "com.cysharp.unitask": "2.2.5"
   },
   "keywords": [
     "gaze",
