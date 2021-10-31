@@ -1,0 +1,18 @@
+{
+    "name": "Gaze.MVVM.ViewModel",
+    "rootNamespace": "Gaze.MVVM",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:f2edf412b1a484b7383fa43ff3be40a1",
+        "GUID:06a73997bbb964722968a911206ca27f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

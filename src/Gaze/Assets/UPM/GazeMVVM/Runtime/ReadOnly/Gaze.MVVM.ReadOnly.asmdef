@@ -1,0 +1,17 @@
+{
+    "name": "Gaze.MVVM.ReadOnly",
+    "rootNamespace": "Gaze.MVVM.ReadOnly",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:f2edf412b1a484b7383fa43ff3be40a1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
