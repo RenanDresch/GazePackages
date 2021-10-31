@@ -8,7 +8,7 @@ namespace Gaze.MVVM.ViewStacking
     public abstract class StackableViewModel : PresentableViewModel, IStackableViewModel
     {
         [SerializeField]
-        protected ViewStackingOrchestrationUseCase viewStackingOrchestrationUseCase;
+        protected ViewStackingOrchestrationService viewStackingOrchestrationService;
         
         [SerializeField]
         Transform attachParent;
@@ -18,7 +18,7 @@ namespace Gaze.MVVM.ViewStacking
         public override async UniTask SetupPresentableView(IPresentableView presentableView)
         {
             await base.SetupPresentableView(presentableView);
-            viewStackingOrchestrationUseCase.PushView(this);
+            viewStackingOrchestrationService.PushView(this);
         }
     }
 }

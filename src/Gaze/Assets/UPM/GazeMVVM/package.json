@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "displayName": "Gaze MVVM",
   "description": "This is the base code required for implementing a solid MVVM architecture for Unity.",
-  "unity": "2019",
+  "unity": "2019.1",
   "dependencies": {
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
-    "com.gaze.utilities": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeUtilities"
+    "com.cysharp.unitask": "2.2.5",
+    "com.gaze.utilities": "0.0.1"
   },
   "keywords": [
     "gaze",
@@ -19,5 +19,12 @@
     "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeMVVM"
   },
   "license": "MIT",
-  "category": "Architechture"
+  "category": "Architechture",
+  "samples": [
+    {
+      "displayName": "MVVM Framework Assembly Template",
+      "description": "Add an Assembly/Folder template to get started with the MVVM architecture",
+      "path": "Samples~/MVVMFramework"
+    }
+  ]
 }

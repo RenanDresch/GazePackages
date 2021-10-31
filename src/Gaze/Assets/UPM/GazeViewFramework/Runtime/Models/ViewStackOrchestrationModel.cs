@@ -5,7 +5,7 @@ namespace Gaze.MVVM.ViewStacking
     [CreateAssetMenu(menuName = "View Stacking/Models/"+nameof(ViewStackOrchestrationModel))]
     public class ViewStackOrchestrationModel : ScriptableObject
     {
-        public ReactiveProperty<ViewStackingUseCase> ActiveStackingService { get; } = new ReactiveProperty<ViewStackingUseCase>();
-        public ReactiveStack<ViewStackingUseCase> ViewStackingServices { get; } = new ReactiveStack<ViewStackingUseCase>();
+        public ReactiveProperty<ViewStackingService> ActiveStackingService { get; } = new ReactiveProperty<ViewStackingService>();
+        public ReactiveStack<ViewStackingService> ViewStackingServices { get; } = new ReactiveStack<ViewStackingService>();
     }
 }

@@ -1,11 +1,13 @@
 using System;
 using Cysharp.Threading.Tasks;
+using Gaze.MVVM.ViewStacking;
 using UnityEngine;
+using IPresentableViewModel = Gaze.MVVM.ReadOnly.ViewStacking.IPresentableViewModel;
 
 namespace Gaze.MVVM.ViewStacking
 {
     [Serializable]
-    public abstract class PresentableViewModel : ViewModel, IPresentableViewModel
+    public abstract class PresentableViewModel : ViewModel, ReadOnly.ViewStacking.IPresentableViewModel
     {
         protected IPresentableView presentableView;
         

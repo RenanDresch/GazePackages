@@ -32,20 +32,12 @@ namespace Gaze.MVVM
                 destructionCancellationTokenSource.Cancel();
                 destructionCancellationTokenSource.Dispose();
             };
-            UniTask.Create(BootstrapView).AttachExternalCancellation(destructionCancellationTokenSource.Token);
+            UniTask.Create(BootstrapView).AttachExternalCancellation(destructionCancellationTokenSource.Token).SuppressCancellationThrow().Forget();
         }
 
         async UniTask BootstrapView()
         {
-            try
-            {
-                await ViewModel.Setup(this);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e, this);
-                throw;
-            }
+            await ViewModel.OnStart(this);
         }
 
 #if UNITY_EDITOR

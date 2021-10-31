@@ -1,71 +1,38 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using Gaze.MVVM.ReadOnly;
+using Gaze.Utilities;
 
 namespace Gaze.MVVM
 {
-    [System.Serializable]
-    public class ReactiveList<T> : ReactiveProperty<IEnumerable<T>>, IList<T>
+    [Serializable]
+    public class ReactiveList<T>
     {
-        List<T> internalList;
+        public readonly WriteableReactiveStack<T> Write;
+        IReactiveStack<T> Read => Write;
 
-        public ReactiveList(IEnumerable<T> content = null)
+        public ReactiveList(T topItem = default)
         {
-            currentValue = internalList = new List<T>();
-            if (content != null)
-            {
-                foreach (var t in content)
-                {
-                    internalList.Add(t);
-                }
-            }
+            Write = new WriteableReactiveStack<T>(topItem);
         }
 
-        public IEnumerator<T> GetEnumerator() => internalList.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public int Count => internalList.Count;
-        public bool IsReadOnly => false;
-        public int IndexOf(T item) => internalList.IndexOf(item);
-        public bool Contains(T item) => internalList.Contains(item);
-        public void CopyTo(T[] array, int arrayIndex) => internalList.CopyTo(array, arrayIndex);
-        
-        public void Add(T item)
+        /// <summary>
+        /// Get returns a new instance of the Stack, not the internal one.
+        /// Set overrides the internal Stack triggering OnChange
+        /// </summary>
+        public Stack<T> Value
         {
-            internalList.Add(item);
-            OnPropertyChangeEvent?.Invoke(internalList);
+            get => new Stack<T>(Read.Value);
+            set => Write.Value = value;
         }
-        public void Clear()
-        {
-            internalList.Clear();
-            OnPropertyChangeEvent?.Invoke(internalList);
-        }
-        public bool Remove(T item)
-        {
-            var result = internalList.Remove(item);
-            if (result)
-            {
-                OnPropertyChangeEvent?.Invoke(internalList);
-            }
-            return result;
-        }
-        public void Insert(int index, T item)
-        {
-            internalList.Insert(index, item);
-            OnPropertyChangeEvent?.Invoke(internalList);
-        }
-        public void RemoveAt(int index)
-        {
-            internalList.RemoveAt(index);
-            OnPropertyChangeEvent?.Invoke(internalList);
-        }
-
-        public T this[int index]
-        {
-            get => internalList[index];
-            set
-            {
-                internalList[index] = value;
-                OnPropertyChangeEvent?.Invoke(internalList);
-            }
-        }
+        public int Count => Read.Count;
+        public T Peek() => Read.Peek();
+        public void Push(T item) => Write.Push(item);
+        public T Pop() => Write.Pop();
+        public void Clear() => Write.Clear();
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action);
+        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPushAction(destroyable, action);
+        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPopAction(destroyable, action);
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => Read.SafeBindOnClearAction(destroyable, action);
     }
 }

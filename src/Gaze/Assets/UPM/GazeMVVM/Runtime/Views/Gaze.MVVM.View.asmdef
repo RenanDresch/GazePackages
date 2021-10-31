@@ -1,9 +1,10 @@
 {
-    "name": "Gaze.MVVM.Example.Models",
-    "rootNamespace": "Gaze.MVVM.Example.Models",
+    "name": "Gaze.MVVM.View",
+    "rootNamespace": "Gaze.MVVM",
     "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
         "GUID:f2edf412b1a484b7383fa43ff3be40a1",
-        "GUID:3867f88e164294b2cafc7a4fd41668da",
+        "GUID:0b2dd4fafb391475f9bf553d154415e9",
         "GUID:06a73997bbb964722968a911206ca27f"
     ],
     "includePlatforms": [],

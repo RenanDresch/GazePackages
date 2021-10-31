@@ -12,7 +12,7 @@ namespace Gaze.MVVM
         /// </summary>
         /// <param name="view">The View this View Model belongs to</param>
         /// We cannot execute the ViewModel setup within the constructor because Unity blocks too many things during the class serialization
-        public virtual UniTask Setup(IView view)
+        public virtual UniTask OnStart(IView view)
         {
             View = view;
             return UniTask.CompletedTask;

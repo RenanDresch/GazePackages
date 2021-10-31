@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "displayName": "Gaze MVVM View Framework",
   "description": "This is a view framework based on Gaze MVVM package. Supports view stacking, common view types like tabs and list views and more.",
-  "unity": "2019",
+  "unity": "2019.1",
   "dependencies": {
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
-    "com.gaze.utilities": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeUtilities",
-    "com.gaze.mvvm": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeMVVM"
+    "com.cysharp.unitask": "2.2.5"
   },
   "keywords": [
     "gaze",
