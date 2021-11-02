@@ -6,20 +6,15 @@ namespace Gaze.MVVM
 {
     public class ReactiveProperty<T> : IReactiveProperty<T>
     {
-        public T Value
-        {
-            get => Read.Value;
-            set => write.Value = value;
-        }
-        readonly WriteableReactiveProperty<T> write;
-        IReactiveProperty<T> Read => write;
+        public T Value => Reader.Value;
+        public readonly WriteableReactiveProperty<T> Writer;
+        IReactiveProperty<T> Reader => Writer;
         
         public ReactiveProperty(T initialValue = default)
         {
-            write = new WriteableReactiveProperty<T>(initialValue);
+            Writer = new WriteableReactiveProperty<T>(initialValue);
         }
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
-        public void ForceUpdateValue(T newValue) => write.ForceUpdateValue(newValue);
-        public static implicit operator T(ReactiveProperty<T> reactiveProperty) => reactiveProperty.Read.Value;
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true) => Reader.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
+        public static implicit operator T(ReactiveProperty<T> reactiveProperty) => reactiveProperty.Reader.Value;
     }
 }

@@ -16,7 +16,7 @@ namespace Gaze.MVVM.Example.Services
 
         internal void AddHardCurrency(uint amount)
         {
-            walletModel.HardCurrencyAmount.Value += (int)amount;
+            walletModel.HardCurrencyAmount.Writer.Value += (int)amount;
         }
         
         internal bool ConsumeHardCurrency(uint amount)
@@ -24,14 +24,14 @@ namespace Gaze.MVVM.Example.Services
             var hasEnoughCurrency = walletModel.HardCurrencyAmount >= (int)amount;
             if (hasEnoughCurrency)
             {
-                walletModel.HardCurrencyAmount.Value -= (int)amount;
+                walletModel.HardCurrencyAmount.Writer.Value -= (int)amount;
             }
             return hasEnoughCurrency;
         }
         
         internal void AddSoftCurrency(uint amount)
         {
-            walletModel.SoftCurrencyAmount.Value += (int)amount;
+            walletModel.SoftCurrencyAmount.Writer.Value += (int)amount;
         }
         
         internal bool ConsumeSoftCurrency(uint amount)
@@ -39,7 +39,7 @@ namespace Gaze.MVVM.Example.Services
             var hasEnoughCurrency = walletModel.SoftCurrencyAmount >= (int)amount;
             if (hasEnoughCurrency)
             {
-                walletModel.SoftCurrencyAmount.Value -= (int)amount;
+                walletModel.SoftCurrencyAmount.Writer.Value -= (int)amount;
             }
             return hasEnoughCurrency;
         }

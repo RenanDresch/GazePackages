@@ -23,7 +23,7 @@ namespace Gaze.MVVM.Example.Services
         {
             if (walletService.ConsumeHardCurrency(storeModel.HardCurrencyCurrentConsumption))
             {
-                storeModel.HardCurrencyCurrentConsumption.Value += storeModel.HardCurrencyConsumptionIncrease;
+                storeModel.HardCurrencyCurrentConsumption.Writer.Value += storeModel.HardCurrencyConsumptionIncrease;
             }
         }
         
@@ -31,7 +31,7 @@ namespace Gaze.MVVM.Example.Services
         {
             if (walletService.ConsumeSoftCurrency(storeModel.HardCurrencyCurrentConsumption))
             {
-                storeModel.SoftCurrencyCurrentConsumption.Value += storeModel.SoftCurrencyConsumptionIncrease;
+                storeModel.SoftCurrencyCurrentConsumption.Writer.Value += storeModel.SoftCurrencyConsumptionIncrease;
             }
         }
 
