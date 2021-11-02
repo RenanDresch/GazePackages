@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class WriteableReactiveStack<T> : WriteableReactiveProperty<Stack<T>>, IReactiveStack<T>
+    public class WriteableReactiveStack<T> : WriteableReactiveProperty<IEnumerable<T>>, IReactiveStack<T>
     {
         Stack<T> internalStack;
 
@@ -17,10 +17,20 @@ namespace Gaze.MVVM
         
         public WriteableReactiveStack(T topItem = default)
         {
-            internalStack = currentValue = new Stack<T>();
+            internalStack = new Stack<T>();
             if (topItem != null)
             {
                 internalStack.Push(topItem);
+            }
+        }
+
+        public override IEnumerable<T> Value
+        {
+            get => internalStack;
+            set
+            {
+                internalStack = new Stack<T>(value);
+                OnPropertyChangeEvent(internalStack);
             }
         }
 
@@ -69,16 +79,16 @@ namespace Gaze.MVVM
         /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
-        /// <param name="action">The action to execute when this property changes. This will pass a new instance of Stack, not the actual Stack this property is managing</param>
+        /// <param name="action">The action to execute when this property changes.</param>
         /// <param name="invokeOnBind">Should the action be invoked right after binding?</param>
-        public override void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true)
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true)
         {
             if (destroyable != null)
             {
                 OnPropertyChangeEvent += action;
                 if (invokeOnBind && Application.isPlaying)
                 {
-                    OnPropertyChangeEvent?.Invoke(new Stack<T>(Value));
+                    OnPropertyChangeEvent?.Invoke(internalStack);
                 }
 
                 destroyable.OnDestroyEvent += () => OnPropertyChangeEvent -= action;

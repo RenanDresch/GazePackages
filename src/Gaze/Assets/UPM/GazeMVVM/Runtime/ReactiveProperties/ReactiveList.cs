@@ -6,33 +6,41 @@ using Gaze.Utilities;
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class ReactiveList<T>
+    public class ReactiveList<T> : IReactiveList<T>
     {
-        public readonly WriteableReactiveStack<T> Write;
-        IReactiveStack<T> Read => Write;
+        public readonly WriteableReactiveList<T> Write;
+        IReactiveList<T> Read => Write;
 
-        public ReactiveList(T topItem = default)
+        public ReactiveList(IEnumerable<T> content = default)
         {
-            Write = new WriteableReactiveStack<T>(topItem);
+            Write = new WriteableReactiveList<T>(content);
         }
 
         /// <summary>
-        /// Get returns a new instance of the Stack, not the internal one.
-        /// Set overrides the internal Stack triggering OnChange
+        /// Get returns the IEnumerable
+        /// Set overrides the internal List triggering OnChange
         /// </summary>
-        public Stack<T> Value
+        public IEnumerable<T> Value
         {
-            get => new Stack<T>(Read.Value);
+            get => Read.Value;
             set => Write.Value = value;
         }
+        
         public int Count => Read.Count;
-        public T Peek() => Read.Peek();
-        public void Push(T item) => Write.Push(item);
-        public T Pop() => Write.Pop();
+        
+        public void Add(T item) => Write.Add(item);
+        public void Insert(int index, T item) => Write.Insert(index, item);
+        public bool Remove(T item) => Write.Remove(item);
+        public void RemoveAt(int index) => Write.RemoveAt(index);
         public void Clear() => Write.Clear();
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action);
-        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPushAction(destroyable, action);
-        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPopAction(destroyable, action);
-        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => Read.SafeBindOnClearAction(destroyable, action);
+        
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action,
+            bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
+        public void SafeBindOnAddAction(IDestroyable destroyable, Action<T> action) =>
+            Read.SafeBindOnAddAction(destroyable, action);
+        public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<T> action) =>
+            Read.SafeBindOnRemoveAction(destroyable, action);
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) =>
+            Read.SafeBindOnClearAction(destroyable, action);
     }
 }

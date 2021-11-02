@@ -17,20 +17,21 @@ namespace Gaze.MVVM
         }
 
         /// <summary>
-        /// Get returns a new instance of the Stack, not the internal one.
+        /// Get returns the IEnumerable
         /// Set overrides the internal Stack triggering OnChange
         /// </summary>
-        public Stack<T> Value
+        public IEnumerable<T> Value
         {
-            get => new Stack<T>(Read.Value);
+            get => Read.Value;
             set => Write.Value = value;
         }
+
         public int Count => Read.Count;
         public T Peek() => Read.Peek();
         public void Push(T item) => Write.Push(item);
         public T Pop() => Write.Pop();
         public void Clear() => Write.Clear();
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action);
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action);
         public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPushAction(destroyable, action);
         public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPopAction(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => Read.SafeBindOnClearAction(destroyable, action);

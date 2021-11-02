@@ -48,7 +48,7 @@ namespace Gaze.MVVM
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when this property changes.</param>
         /// <param name="invokeOnBind">Should the action be invoked right after binding?</param>
-        public virtual void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true)
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true)
         {
             if (destroyable != null)
             {
