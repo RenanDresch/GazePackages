@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
-using UnityEngine;
 
 namespace Gaze.MVVM
 {
@@ -11,9 +10,9 @@ namespace Gaze.MVVM
     {
         Stack<T> internalStack;
 
-        Action<T,T> onPush;
-        Action<T,T> onPop;
-        Action onClear;
+        SafeAction<T,T> onPush = new SafeAction<T, T>();
+        SafeAction<T,T> onPop = new SafeAction<T, T>();
+        SafeAction onClear = new SafeAction();
         
         public WriteableReactiveStack(T topItem = default)
         {
@@ -30,7 +29,7 @@ namespace Gaze.MVVM
             set
             {
                 internalStack = new Stack<T>(value);
-                OnPropertyChangeEvent(internalStack);
+                OnPropertyChangeEvent.Invoke(internalStack);
             }
         }
 
@@ -48,21 +47,21 @@ namespace Gaze.MVVM
             }
             
             internalStack.Push(item);
-            OnPropertyChangeEvent?.Invoke(internalStack);
-            onPush?.Invoke(item, formerStackTop);
+            OnPropertyChangeEvent.Invoke(internalStack);
+            onPush.Invoke(item, formerStackTop);
         }
         
         public T Pop()
         {
             var item = internalStack.Pop();
-            OnPropertyChangeEvent?.Invoke(internalStack);
+            OnPropertyChangeEvent.Invoke(internalStack);
             if (Count < 1)
             {
-                onClear?.Invoke();
+                onClear.Invoke();
             }
             else
             {
-                onPop?.Invoke(item, Peek());
+                onPop.Invoke(item, Peek());
             }
             return item;
         }
@@ -70,33 +69,8 @@ namespace Gaze.MVVM
         public void Clear()
         {
             internalStack.Clear();
-            OnPropertyChangeEvent?.Invoke(internalStack);
-            onClear?.Invoke();
-        }
-
-        /// <summary>
-        /// Binds an action to this Reactive Property so it's invoked whenever the OnChange triggers.
-        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
-        /// </summary>
-        /// <param name="destroyable">The destroyable object that owns the target action.</param>
-        /// <param name="action">The action to execute when this property changes.</param>
-        /// <param name="invokeOnBind">Should the action be invoked right after binding?</param>
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true)
-        {
-            if (destroyable != null)
-            {
-                OnPropertyChangeEvent += action;
-                if (invokeOnBind && Application.isPlaying)
-                {
-                    OnPropertyChangeEvent?.Invoke(internalStack);
-                }
-
-                destroyable.OnDestroyEvent += () => OnPropertyChangeEvent -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
+            OnPropertyChangeEvent.Invoke(internalStack);
+            onClear.Invoke();
         }
 
         /// <summary>
@@ -106,19 +80,8 @@ namespace Gaze.MVVM
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when a new item gets pushed into the stack.
         /// The first argument represents the new pushed item, the second one represents the former stack top</param>
-        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T,T> action)
-        {
-            if (destroyable != null)
-            {
-                onPush += action;
-                destroyable.OnDestroyEvent += () => onPush -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
-        
+        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) => onPush.SafeBind(destroyable, action);
+
         /// <summary>
         /// Binds an action to this Reactive Stack so it's invoked whenever a new item is popped from the stack.
         /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
@@ -126,36 +89,14 @@ namespace Gaze.MVVM
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when an item gets popped from the stack.
         /// The first argument represents the popped item, the second one represents the new stack top</param>
-        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T,T> action)
-        {
-            if (destroyable != null)
-            {
-                onPop += action;
-                destroyable.OnDestroyEvent += () => onPop -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
-        
+        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) => onPop.SafeBind(destroyable, action);
+
         /// <summary>
         /// Binds an action to this Reactive Stack so it's invoked whenever the stack gets empty.
         /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute after the last item gets popped from the stack.</param>
-        public void SafeBindOnClearAction(IDestroyable destroyable, Action action)
-        {
-            if (destroyable != null)
-            {
-                onClear += action;
-                destroyable.OnDestroyEvent += () => onClear -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
     }
 }

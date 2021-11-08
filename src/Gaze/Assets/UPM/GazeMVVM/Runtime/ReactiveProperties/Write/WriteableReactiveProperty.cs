@@ -15,7 +15,8 @@ namespace Gaze.MVVM
             get => currentValue;
             set => SetProperty(ref currentValue, value);
         }
-        protected Action<T> OnPropertyChangeEvent { get; set; }
+        
+        protected SafeAction<T> OnPropertyChangeEvent = new SafeAction<T>();
 
         public WriteableReactiveProperty(T value = default)
         {
@@ -47,22 +48,12 @@ namespace Gaze.MVVM
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when this property changes.</param>
-        /// <param name="invokeOnBind">Should the action be invoked right after binding?</param>
+        /// <param name="invokeOnBind">True will invoke the action passing the current value stored into the ReactiveProperty right after binding it.</param>
         public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true)
         {
-            if (destroyable != null)
+            if (OnPropertyChangeEvent.SafeBind(destroyable, action) && invokeOnBind)
             {
-                OnPropertyChangeEvent += action;
-                if (invokeOnBind && Application.isPlaying)
-                {
-                    OnPropertyChangeEvent?.Invoke(Value);
-                }
-
-                destroyable.OnDestroyEvent += () => OnPropertyChangeEvent -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
+                action.Invoke(Value);
             }
         }
         
@@ -81,7 +72,7 @@ namespace Gaze.MVVM
         /// <param name="action">The action to unbind</param>
         public void UnbindOnChangeAction(Action<T> action)
         {
-            OnPropertyChangeEvent -= action;
+            OnPropertyChangeEvent.Unbind(action);
         }
 
         /// <summary>
@@ -102,7 +93,7 @@ namespace Gaze.MVVM
             if (forceUpdate || !Equals(storedValue, value))
             {
                 currentValue = value;
-                OnPropertyChangeEvent?.Invoke(value);
+                OnPropertyChangeEvent.Invoke(value);
             }
         }
 

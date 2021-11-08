@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
-using UnityEngine;
 
 namespace Gaze.MVVM
 {
@@ -12,9 +11,9 @@ namespace Gaze.MVVM
     {
         List<T> internalList;
 
-        Action<T> onAdd;
-        Action<T> onRemove;
-        Action onClear;
+        SafeAction<T> onAdd = new SafeAction<T>();
+        SafeAction<T> onRemove = new SafeAction<T>();
+        SafeAction onClear = new SafeAction();
         
         public WriteableReactiveList(IEnumerable<T> content = null)
         {
@@ -39,37 +38,37 @@ namespace Gaze.MVVM
         public void Add(T item)
         {
             internalList.Add(item);
-            OnPropertyChangeEvent?.Invoke(internalList);
-            onAdd?.Invoke(item);
+            OnPropertyChangeEvent.Invoke(internalList);
+            onAdd.Invoke(item);
         }
         public void Clear()
         {
             internalList.Clear();
-            OnPropertyChangeEvent?.Invoke(internalList);
-            onClear?.Invoke();
+            OnPropertyChangeEvent.Invoke(internalList);
+            onClear.Invoke();
         }
         public bool Remove(T item)
         {
             var result = internalList.Remove(item);
             if (result)
             {
-                OnPropertyChangeEvent?.Invoke(internalList);
-                onRemove?.Invoke(item);
+                OnPropertyChangeEvent.Invoke(internalList);
+                onRemove.Invoke(item);
             }
             return result;
         }
         public void Insert(int index, T item)
         {
             internalList.Insert(index, item);
-            OnPropertyChangeEvent?.Invoke(internalList);
-            onAdd?.Invoke(item);
+            OnPropertyChangeEvent.Invoke(internalList);
+            onAdd.Invoke(item);
         }
         public void RemoveAt(int index)
         {
             var removedItem = internalList[index];
             internalList.RemoveAt(index);
-            OnPropertyChangeEvent?.Invoke(internalList);
-            onRemove?.Invoke(removedItem);
+            OnPropertyChangeEvent.Invoke(internalList);
+            onRemove.Invoke(removedItem);
         }
 
         public T this[int index]
@@ -81,67 +80,13 @@ namespace Gaze.MVVM
                 internalList[index] = value;
                 if (!Equals(oldValue, value))
                 {
-                    OnPropertyChangeEvent?.Invoke(internalList); 
+                    OnPropertyChangeEvent.Invoke(internalList); 
                 }
             }
         }
 
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true)
-        {
-            if (destroyable != null)
-            {
-                OnPropertyChangeEvent += action;
-                if (invokeOnBind && Application.isPlaying)
-                {
-                    OnPropertyChangeEvent?.Invoke(Value);
-                }
-
-                destroyable.OnDestroyEvent += () => OnPropertyChangeEvent -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
-        
-        public void SafeBindOnAddAction(IDestroyable destroyable, Action<T> action)
-        {
-            if (destroyable != null)
-            {
-                onAdd += action;
-                destroyable.OnDestroyEvent += () => onAdd -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
-
-        public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<T> action)
-        {
-            if (destroyable != null)
-            {
-                onRemove += action;
-                destroyable.OnDestroyEvent += () => onRemove -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
-
-        public void SafeBindOnClearAction(IDestroyable destroyable, Action action)
-        {
-            if (destroyable != null)
-            {
-                onClear += action;
-                destroyable.OnDestroyEvent += () => onClear -= action;
-            }
-            else
-            {
-                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
-            }
-        }
-
+        public void SafeBindOnAddAction(IDestroyable destroyable, Action<T> action) => onAdd.SafeBind(destroyable, action);
+        public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<T> action) => onRemove.SafeBind(destroyable, action);
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
     }
 }

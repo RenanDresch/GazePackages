@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Gaze.Utilities;
 
 namespace Gaze.MVVM
 {
@@ -9,6 +10,10 @@ namespace Gaze.MVVM
     {
         Dictionary<TK, TV> internalDictionary;
 
+        SafeAction<KeyValuePair<TK, TV>> onAdd = new SafeAction<KeyValuePair<TK, TV>>();
+        SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
+        SafeAction onClear = new SafeAction();
+        
         public WriteableReactiveDictionary() => currentValue = internalDictionary = new Dictionary<TK, TV>();
         
         public ICollection<TK> Keys => internalDictionary.Keys;
@@ -29,30 +34,35 @@ namespace Gaze.MVVM
         public void Add(KeyValuePair<TK, TV> item)
         {
             internalDictionary.Add(item.Key, item.Value);
-            OnPropertyChangeEvent?.Invoke(internalDictionary);
+            OnPropertyChangeEvent.Invoke(internalDictionary);
+            onAdd.Invoke(item);
         }
-        public void Clear()
-        {
-            internalDictionary.Clear();
-            OnPropertyChangeEvent?.Invoke(internalDictionary);
-        }
-
+        
         public bool Remove(KeyValuePair<TK, TV> item)
         {
             var result = false;
             if (Contains(item))
             {
                 internalDictionary.Remove(item.Key);
-                OnPropertyChangeEvent?.Invoke(internalDictionary);
+                OnPropertyChangeEvent.Invoke(internalDictionary);
+                onRemove.Invoke(item);
                 result = true;
             }
             return result;
         }
         
+        public void Clear()
+        {
+            internalDictionary.Clear();
+            OnPropertyChangeEvent.Invoke(internalDictionary);
+            onClear.Invoke();
+        }
+
         public void Add(TK key, TV value)
         {
             internalDictionary.Add(key, value);
-            OnPropertyChangeEvent?.Invoke(internalDictionary);
+            OnPropertyChangeEvent.Invoke(internalDictionary);
+            onAdd.Invoke(new KeyValuePair<TK, TV>(key, value));
         }
       
         public bool Remove(TK key)
@@ -60,8 +70,10 @@ namespace Gaze.MVVM
             var result = false;
             if (ContainsKey(key))
             {
+                var value = internalDictionary[key];
                 internalDictionary.Remove(key);
-                OnPropertyChangeEvent?.Invoke(internalDictionary);
+                OnPropertyChangeEvent.Invoke(internalDictionary);
+                onRemove.Invoke(new KeyValuePair<TK, TV>(key, value));
                 result = true;
             }
             return result;
@@ -77,7 +89,7 @@ namespace Gaze.MVVM
                 internalDictionary[key] = value;
                 if (!Equals(oldValue, value))
                 {
-                    OnPropertyChangeEvent?.Invoke(internalDictionary);
+                    OnPropertyChangeEvent.Invoke(internalDictionary);
                 }
             }
         }
