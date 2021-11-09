@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
 
@@ -11,19 +12,30 @@ namespace Gaze.MVVM
     {
         List<T> internalList;
 
-        SafeAction<T> onAdd = new SafeAction<T>();
-        SafeAction<T> onRemove = new SafeAction<T>();
-        SafeAction onClear = new SafeAction();
-        
+        readonly SafeAction<T> onAdd = new SafeAction<T>();
+        readonly SafeAction<T> onRemove = new SafeAction<T>();
+        readonly SafeAction<(int index, T newItem, T formerItem)> onReplace = new SafeAction<(int,T,T)>();
+        readonly SafeAction onClear = new SafeAction();
+
         public WriteableReactiveList(IEnumerable<T> content = null)
         {
-            currentValue = internalList = new List<T>();
+            internalList = new List<T>();
             if (content != null)
             {
                 foreach (var t in content)
                 {
                     internalList.Add(t);
                 }
+            }
+        }
+        
+        public override IEnumerable<T> Value
+        {
+            get => internalList;
+            set
+            {
+                internalList = value.ToList();
+                OnPropertyChangeEvent.Invoke(internalList);
             }
         }
 
@@ -80,13 +92,15 @@ namespace Gaze.MVVM
                 internalList[index] = value;
                 if (!Equals(oldValue, value))
                 {
-                    OnPropertyChangeEvent.Invoke(internalList); 
+                    OnPropertyChangeEvent.Invoke(internalList);
+                    onReplace.Invoke((index, value, oldValue));
                 }
             }
         }
 
         public void SafeBindOnAddAction(IDestroyable destroyable, Action<T> action) => onAdd.SafeBind(destroyable, action);
         public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<T> action) => onRemove.SafeBind(destroyable, action);
+        public void SafeBindOnReplaceAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) => onReplace.SafeBind(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
     }
 }

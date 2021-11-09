@@ -1,38 +1,31 @@
-// using System;
-// using System.Collections.Generic;
-// using Gaze.MVVM.ReadOnly;
-// using Gaze.Utilities;
-//
-// namespace Gaze.MVVM
-// {
-//     [Serializable]
-//     public class ReactiveDictionary<TK, TV>
-//     {
-//         public readonly WriteableReactiveDictionary<TK, TV> Write;
-//         IReactiveStack<T> Read => Write;
-//
-//         public ReactiveDictionary(T topItem = default)
-//         {
-//             Write = new WriteableReactiveStack<T>(topItem);
-//         }
-//
-//         /// <summary>
-//         /// Get returns a new instance of the Stack, not the internal one.
-//         /// Set overrides the internal Stack triggering OnChange
-//         /// </summary>
-//         public Stack<T> Value
-//         {
-//             get => new Stack<T>(Read.Value);
-//             set => Write.Value = value;
-//         }
-//         public int Count => Read.Count;
-//         public T Peek() => Read.Peek();
-//         public void Push(T item) => Write.Push(item);
-//         public T Pop() => Write.Pop();
-//         public void Clear() => Write.Clear();
-//         public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true) => Read.SafeBindOnChangeAction(destroyable, action);
-//         public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPushAction(destroyable, action);
-//         public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) => Read.SafeBindOnPopAction(destroyable, action);
-//         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => Read.SafeBindOnClearAction(destroyable, action);
-//     }
-// }
+using System;
+using System.Collections.Generic;
+using Gaze.MVVM.ReadOnly;
+using Gaze.Utilities;
+
+namespace Gaze.MVVM
+{
+    [Serializable]
+    public class ReactiveDictionary<TK, TV> : IReactiveDictionary<TK, TV>
+    {
+        public readonly WriteableReactiveDictionary<TK, TV> Writer;
+        IReactiveDictionary<TK, TV> Reader => Writer;
+        
+        public IEnumerable<KeyValuePair<TK, TV>> Value => Writer.Value;
+        public int Count => Writer.Count;
+        public TV this[TK key] => Writer[key];
+        
+        public ReactiveDictionary() => Writer = new WriteableReactiveDictionary<TK, TV>();
+        
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<KeyValuePair<TK, TV>>> action, bool invokeOnBind = true) =>
+            Writer.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
+        public void SafeBindOnAddAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) =>
+            Writer.SafeBindOnAddAction(destroyable, action);
+        public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) =>
+            Writer.SafeBindOnRemoveAction(destroyable, action);
+        public void SafeBindOnReplaceAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>, TV> action) =>
+            Writer.SafeBindOnReplaceAction(destroyable, action);
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) =>
+            Writer.SafeBindOnClearAction(destroyable, action);
+    }
+}

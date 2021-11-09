@@ -10,9 +10,9 @@ namespace Gaze.MVVM
     {
         Queue<T> internalQueue;
 
-        SafeAction<T> onEnqueue = new SafeAction<T>();
-        SafeAction<T> onDequeue = new SafeAction<T>();
-        SafeAction onClear = new SafeAction();
+        readonly SafeAction<T> onEnqueue = new SafeAction<T>();
+        readonly SafeAction<T> onDequeue = new SafeAction<T>();
+        readonly SafeAction onClear = new SafeAction();
         
         public WriteableReactiveQueue(T frontItem = default)
         {

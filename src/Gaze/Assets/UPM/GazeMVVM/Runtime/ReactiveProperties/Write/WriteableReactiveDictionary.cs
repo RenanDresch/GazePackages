@@ -1,21 +1,34 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
 
 namespace Gaze.MVVM
 {
     [System.Serializable]
-    public class WriteableReactiveDictionary<TK, TV> : WriteableReactiveProperty<IDictionary<TK, TV>>, IDictionary<TK, TV>
+    public class WriteableReactiveDictionary<TK, TV> : WriteableReactiveProperty<IEnumerable<KeyValuePair<TK, TV>>>, IDictionary<TK, TV>, IReactiveDictionary<TK, TV>
     {
         Dictionary<TK, TV> internalDictionary;
 
-        SafeAction<KeyValuePair<TK, TV>> onAdd = new SafeAction<KeyValuePair<TK, TV>>();
-        SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
-        SafeAction onClear = new SafeAction();
+        readonly SafeAction<KeyValuePair<TK, TV>> onAdd = new SafeAction<KeyValuePair<TK, TV>>();
+        readonly SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
+        readonly SafeAction<KeyValuePair<TK, TV>, TV> onReplace = new SafeAction<KeyValuePair<TK, TV>, TV>();
+        readonly SafeAction onClear = new SafeAction();
         
-        public WriteableReactiveDictionary() => currentValue = internalDictionary = new Dictionary<TK, TV>();
-        
+        public WriteableReactiveDictionary() => internalDictionary = new Dictionary<TK, TV>();
+
+        public override IEnumerable<KeyValuePair<TK, TV>> Value
+        {
+            get => internalDictionary;
+            set
+            {
+                internalDictionary = value.ToDictionary(pair => pair.Key, pair => pair.Value);
+                OnPropertyChangeEvent.Invoke(internalDictionary);
+            }
+        }
+
         public ICollection<TK> Keys => internalDictionary.Keys;
         public ICollection<TV> Values => internalDictionary.Values;
         public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => internalDictionary.GetEnumerator();
@@ -79,7 +92,11 @@ namespace Gaze.MVVM
             return result;
         }
 
-
+        public void SafeBindOnAddAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) => onAdd.SafeBind(destroyable, action);
+        public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) => onRemove.SafeBind(destroyable, action);
+        public void SafeBindOnReplaceAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>, TV> action) => onReplace.SafeBind(destroyable, action);
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
+        
         public TV this[TK key]
         {
             get => internalDictionary[key];
@@ -90,6 +107,7 @@ namespace Gaze.MVVM
                 if (!Equals(oldValue, value))
                 {
                     OnPropertyChangeEvent.Invoke(internalDictionary);
+                    onReplace.Invoke(new KeyValuePair<TK, TV>(key, value), oldValue);
                 }
             }
         }

@@ -10,11 +10,12 @@ namespace Gaze.MVVM
         public readonly WriteableReactiveProperty<T> Writer;
         IReactiveProperty<T> Reader => Writer;
         
-        public ReactiveProperty(T initialValue = default)
-        {
-            Writer = new WriteableReactiveProperty<T>(initialValue);
-        }
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true) => Reader.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
-        public static implicit operator T(ReactiveProperty<T> reactiveProperty) => reactiveProperty.Reader.Value;
+        public ReactiveProperty(T initialValue = default) => Writer = new WriteableReactiveProperty<T>(initialValue);
+        
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true) =>
+            Reader.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
+        
+        public static implicit operator T(ReactiveProperty<T> reactiveProperty) =>
+            reactiveProperty.Reader.Value;
     }
 }

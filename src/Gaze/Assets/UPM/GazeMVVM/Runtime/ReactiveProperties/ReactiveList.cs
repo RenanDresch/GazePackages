@@ -10,26 +10,21 @@ namespace Gaze.MVVM
     {
         public readonly WriteableReactiveList<T> Writer;
         IReactiveList<T> Reader => Writer;
-
-        public ReactiveList(IEnumerable<T> content = default)
-        {
-            Writer = new WriteableReactiveList<T>(content);
-        }
-
-        /// <summary>
-        /// Get returns the IEnumerable
-        /// Set overrides the internal List triggering OnChange
-        /// </summary>
-        public IEnumerable<T> Value => Reader.Value;
-
-        public int Count => Reader.Count;
         
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action,
-            bool invokeOnBind = true) => Reader.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
+        public IEnumerable<T> Value => Reader.Value;
+        public int Count => Reader.Count;
+        public T this[int index] => Writer[index];
+
+        public ReactiveList(IEnumerable<T> content = default) => Writer = new WriteableReactiveList<T>(content);
+
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true) =>
+            Reader.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
         public void SafeBindOnAddAction(IDestroyable destroyable, Action<T> action) =>
             Reader.SafeBindOnAddAction(destroyable, action);
         public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<T> action) =>
             Reader.SafeBindOnRemoveAction(destroyable, action);
+        public void SafeBindOnReplaceAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) =>
+            Reader.SafeBindOnReplaceAction(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) =>
             Reader.SafeBindOnClearAction(destroyable, action);
     }

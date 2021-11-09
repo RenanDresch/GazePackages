@@ -16,7 +16,7 @@ namespace Gaze.MVVM
             set => SetProperty(ref currentValue, value);
         }
         
-        protected SafeAction<T> OnPropertyChangeEvent = new SafeAction<T>();
+        protected readonly SafeAction<T> OnPropertyChangeEvent = new SafeAction<T>();
 
         public WriteableReactiveProperty(T value = default)
         {

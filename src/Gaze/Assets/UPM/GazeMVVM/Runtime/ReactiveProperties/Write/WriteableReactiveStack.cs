@@ -10,9 +10,9 @@ namespace Gaze.MVVM
     {
         Stack<T> internalStack;
 
-        SafeAction<T,T> onPush = new SafeAction<T, T>();
-        SafeAction<T,T> onPop = new SafeAction<T, T>();
-        SafeAction onClear = new SafeAction();
+        readonly SafeAction<T,T> onPush = new SafeAction<T, T>();
+        readonly SafeAction<T,T> onPop = new SafeAction<T, T>();
+        readonly SafeAction onClear = new SafeAction();
         
         public WriteableReactiveStack(T topItem = default)
         {
