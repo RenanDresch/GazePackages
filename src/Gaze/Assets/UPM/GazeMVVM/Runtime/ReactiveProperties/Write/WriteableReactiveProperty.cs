@@ -76,6 +76,11 @@ namespace Gaze.MVVM
         }
 
         /// <summary>
+        /// Unbinds all OnChange Action from this Reactive Property, allowing it to get collected. 
+        /// </summary>
+        public virtual void UnbindAllOnChangeActions() => OnPropertyChangeEvent.UnbindAll();
+
+        /// <summary>
         /// Passes a new value to this Reactive Property and forces it to invoke the OnChange trigger (even if the passed value is the same as the current one), invoking every listener as consequence.
         /// </summary>
         public void ForceUpdateValue(T newValue)

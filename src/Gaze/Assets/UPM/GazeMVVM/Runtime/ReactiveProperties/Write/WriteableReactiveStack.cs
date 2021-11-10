@@ -98,5 +98,16 @@ namespace Gaze.MVVM
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute after the last item gets popped from the stack.</param>
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
+        
+        /// <summary>
+        /// Unbinds all Actions from this Reactive Property, allowing it to get collected. 
+        /// </summary>
+        public void UnbindAllActions()
+        {
+            OnPropertyChangeEvent.UnbindAll();
+            onPush.UnbindAll();
+            onPop.UnbindAll();
+            onClear.UnbindAll();
+        }
     }
 }

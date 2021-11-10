@@ -111,5 +111,17 @@ namespace Gaze.MVVM
                 }
             }
         }
+        
+        /// <summary>
+        /// Unbinds all Actions from this Reactive Property, allowing it to get collected. 
+        /// </summary>
+        public void UnbindAllActions()
+        {
+            OnPropertyChangeEvent.UnbindAll();
+            onAdd.UnbindAll();
+            onRemove.UnbindAll();
+            onReplace.UnbindAll();
+            onClear.UnbindAll();
+        }
     }
 }

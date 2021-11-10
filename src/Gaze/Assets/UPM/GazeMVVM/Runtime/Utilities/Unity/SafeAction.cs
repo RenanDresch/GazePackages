@@ -28,6 +28,11 @@ namespace Gaze.Utilities
             this.action -= action;
         }
         
+        public void UnbindAll()
+        {
+            action = null;
+        }
+        
         public void Invoke()
         {
             action?.Invoke();
@@ -57,6 +62,11 @@ namespace Gaze.Utilities
         public void Unbind(Action<T> action)
         {
             this.action -= action;
+        }
+
+        public void UnbindAll()
+        {
+            action = null;
         }
         
         public void Invoke(T value)
@@ -88,6 +98,11 @@ namespace Gaze.Utilities
         public void Unbind(Action<T1,T2> action)
         {
             this.action -= action;
+        }
+        
+        public void UnbindAll()
+        {
+            action = null;
         }
         
         public void Invoke(T1 valueA, T2 valueB)

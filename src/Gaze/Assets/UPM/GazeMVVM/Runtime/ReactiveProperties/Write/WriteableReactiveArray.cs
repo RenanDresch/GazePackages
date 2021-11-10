@@ -56,5 +56,14 @@ namespace Gaze.MVVM
         }
         
         public void SafeBindOnModifyItemAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) => onModifyItem.SafeBind(destroyable, action);
+
+        /// <summary>
+        /// Unbinds all Actions from this Reactive Property, allowing it to get collected. 
+        /// </summary>
+        public void UnbindAllActions()
+        {
+            OnPropertyChangeEvent.UnbindAll();
+            onModifyItem.UnbindAll();
+        }
     }
 }
