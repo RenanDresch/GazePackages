@@ -21,7 +21,7 @@ namespace Gaze.MVVM
 
         public override IEnumerable<KeyValuePair<TK, TV>> Value
         {
-            get => internalDictionary;
+            get => internalDictionary.ToArray();
             set
             {
                 internalDictionary = value.ToDictionary(pair => pair.Key, pair => pair.Value);

@@ -30,7 +30,7 @@ namespace Gaze.MVVM
         
         public override IEnumerable<T> Value
         {
-            get => internalArray;
+            get => internalArray.ToArray();
             set
             {
                 internalArray = value.ToArray();
