@@ -1,4 +1,3 @@
-using Cysharp.Threading.Tasks;
 using Gaze.MVVM.ReadOnly;
 
 namespace Gaze.MVVM
@@ -12,16 +11,19 @@ namespace Gaze.MVVM
         /// </summary>
         /// <param name="view">The View this View Model belongs to</param>
         /// We cannot execute the ViewModel setup within the constructor because Unity blocks too many things during the class serialization
-        public virtual UniTask OnStart(IView view)
+        public virtual void OnStart(IView view)
         {
             View = view;
-            return UniTask.CompletedTask;
         }
+        
+        /// <summary>
+        /// Executed when the MonoBehaviour that instantiated this ViewModel is destroyed.
+        /// </summary>
+        public virtual void OnDestroy() {}
 
 #if UNITY_EDITOR
-        public virtual void Reset()
-        {
-        }
+        public virtual void Reset() {}
+        public virtual void OnValidate() {}
 #endif
     }
 }

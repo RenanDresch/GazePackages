@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
 using UnityEngine;
@@ -12,10 +10,7 @@ namespace Gaze.MVVM
     {
         [SerializeField]
         T viewModel;
-        
-        readonly CancellationTokenSource destructionCancellationTokenSource = new CancellationTokenSource();
-        protected CancellationToken DestructionCancellationToken => destructionCancellationTokenSource.Token;
-        
+
         public T ViewModel => viewModel;
         public GameObject GameObject => this ? gameObject : null;
         public virtual Transform Parent
@@ -27,17 +22,13 @@ namespace Gaze.MVVM
         protected override void Awake()
         {
             base.Awake();
-            OnDestroyEvent += () =>
-            {
-                destructionCancellationTokenSource.Cancel();
-                destructionCancellationTokenSource.Dispose();
-            };
-            UniTask.Create(BootstrapView).AttachExternalCancellation(destructionCancellationTokenSource.Token).SuppressCancellationThrow().Forget();
+            ViewModel.OnStart(this);
         }
 
-        async UniTask BootstrapView()
+        protected override void OnDestroy()
         {
-            await ViewModel.OnStart(this);
+            base.OnDestroy();
+            viewModel.OnDestroy();
         }
 
 #if UNITY_EDITOR
@@ -48,6 +39,7 @@ namespace Gaze.MVVM
                 viewModel = new T();
                 viewModel.Reset();
             }
+            viewModel.OnValidate();
         }
 #endif
     }

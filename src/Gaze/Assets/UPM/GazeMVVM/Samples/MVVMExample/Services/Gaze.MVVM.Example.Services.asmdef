@@ -2,7 +2,6 @@
     "name": "Gaze.MVVM.Example.Services",
     "rootNamespace": "Gaze.MVVM.Example.Services",
     "references": [
-        "GUID:f51ebe6a0ceec4240a699833d6309b23",
         "GUID:f2edf412b1a484b7383fa43ff3be40a1",
         "GUID:3867f88e164294b2cafc7a4fd41668da",
         "GUID:3dc8df66ac4554c9bb8695084db39ff4",
