@@ -4,6 +4,6 @@ namespace Gaze.Utilities
 {
     public interface IAwakeable
     {
-        public event Action OnAwakeEvent;
+        event Action OnAwakeEvent;
     }
 }

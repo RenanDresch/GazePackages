@@ -4,6 +4,6 @@ namespace Gaze.Utilities
 {
     public interface IDestroyable
     {
-        public event Action OnDestroyEvent;
+        event Action OnDestroyEvent;
     }
 }
