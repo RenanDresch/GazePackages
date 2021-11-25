@@ -17,6 +17,8 @@ namespace Gaze.MVVM
         
         public ReactiveDictionary() => Writer = new WriteableReactiveDictionary<TK, TV>();
         
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<IEnumerable<KeyValuePair<TK, TV>>> targetReactiveProperty) =>
+            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty);
         public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<KeyValuePair<TK, TV>>> action, bool invokeOnBind = true) =>
             Writer.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
         public void SafeBindOnAddAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) =>

@@ -29,12 +29,12 @@ namespace Gaze.MVVM
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target ReactiveProperty.</param>
         /// <param name="targetWriteableReactiveProperty">The ReactiveProperty that will bind to this one.</param>
-        public void SafeBindToReactiveProperty(IDestroyable destroyable, WriteableReactiveProperty<T> targetWriteableReactiveProperty)
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<T> targetReactiveProperty)
         {
             if (destroyable != null)
             {
-                Value = targetWriteableReactiveProperty.Value;
-                targetWriteableReactiveProperty.SafeBindOnChangeAction(destroyable, SetValue);
+                Value = targetReactiveProperty.Value;
+                targetReactiveProperty.SafeBindOnChangeAction(destroyable, SetValue);
             }
             else
             {

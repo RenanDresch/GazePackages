@@ -17,6 +17,8 @@ namespace Gaze.MVVM
         public ReactiveStack(T topItem = default) => Writer = new WriteableReactiveStack<T>(topItem);
         
         public T Peek() => Reader.Peek();
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<IEnumerable<T>> targetReactiveProperty) =>
+            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty);
         public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true) =>
             Reader.SafeBindOnChangeAction(destroyable, action);
         public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) =>

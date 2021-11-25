@@ -19,6 +19,8 @@ namespace Gaze.MVVM
 
         public ReactiveArray(IEnumerable<T> content) => Writer = new WriteableReactiveArray<T>(content);
 
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<IEnumerable<T>> targetReactiveProperty) =>
+            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty);
         public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true) => 
             Reader.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
         public void SafeBindOnModifyItemAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) =>
