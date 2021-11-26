@@ -9,23 +9,22 @@ namespace Gaze.MVVM
     public class ReactiveStack<T> : IReactiveStack<T>
     {
         public readonly WriteableReactiveStack<T> Writer;
-        IReactiveStack<T> Reader => Writer;
 
-        public IEnumerable<T> Value => Reader.Value;
-        public int Count => Reader.Count;
+        public Stack<T> Value => new Stack<T>(Writer.Value);
+        public int Count => Writer.Count;
         
         public ReactiveStack(T topItem = default) => Writer = new WriteableReactiveStack<T>(topItem);
         
-        public T Peek() => Reader.Peek();
-        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<IEnumerable<T>> targetReactiveProperty) =>
-            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty);
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true) =>
-            Reader.SafeBindOnChangeAction(destroyable, action);
+        public T Peek() => Writer.Peek();
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, ReactiveStack<T> targetReactiveProperty) =>
+            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty.Writer);
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true) =>
+            Writer.SafeBindOnChangeAction(destroyable, action);
         public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) =>
-            Reader.SafeBindOnPushAction(destroyable, action);
+            Writer.SafeBindOnPushAction(destroyable, action);
         public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) =>
-            Reader.SafeBindOnPopAction(destroyable, action);
+            Writer.SafeBindOnPopAction(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) =>
-            Reader.SafeBindOnClearAction(destroyable, action);
+            Writer.SafeBindOnClearAction(destroyable, action);
     }
 }

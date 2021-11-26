@@ -6,36 +6,24 @@ using Gaze.Utilities;
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class WriteableReactiveStack<T> : WriteableReactiveProperty<IEnumerable<T>>, IReactiveStack<T>
+    public class WriteableReactiveStack<T> : WriteableReactiveProperty<Stack<T>>, IReactiveStack<T>
     {
-        Stack<T> internalStack;
-
         readonly SafeAction<T,T> onPush = new SafeAction<T, T>();
         readonly SafeAction<T,T> onPop = new SafeAction<T, T>();
         readonly SafeAction onClear = new SafeAction();
         
         public WriteableReactiveStack(T topItem = default)
         {
-            internalStack = new Stack<T>();
+            Value = new Stack<T>();
             if (topItem != null)
             {
-                internalStack.Push(topItem);
+                Value.Push(topItem);
             }
         }
 
-        public override IEnumerable<T> Value
-        {
-            get => internalStack;
-            set
-            {
-                internalStack = new Stack<T>(value);
-                OnPropertyChangeEvent.Invoke(internalStack);
-            }
-        }
+        public int Count => Value.Count;
 
-        public int Count => internalStack.Count;
-
-        public T Peek() => internalStack.Peek();
+        public T Peek() => Value.Peek();
 
         public void Push(T item)
         {
@@ -46,15 +34,15 @@ namespace Gaze.MVVM
                 formerStackTop = Peek();
             }
             
-            internalStack.Push(item);
-            OnPropertyChangeEvent.Invoke(internalStack);
+            Value.Push(item);
+            OnPropertyChangeEvent.Invoke(Value);
             onPush.Invoke(item, formerStackTop);
         }
         
         public T Pop()
         {
-            var item = internalStack.Pop();
-            OnPropertyChangeEvent.Invoke(internalStack);
+            var item = Value.Pop();
+            OnPropertyChangeEvent.Invoke(Value);
             if (Count < 1)
             {
                 onClear.Invoke();
@@ -68,8 +56,8 @@ namespace Gaze.MVVM
 
         public void Clear()
         {
-            internalStack.Clear();
-            OnPropertyChangeEvent.Invoke(internalStack);
+            Value.Clear();
+            OnPropertyChangeEvent.Invoke(Value);
             onClear.Invoke();
         }
 

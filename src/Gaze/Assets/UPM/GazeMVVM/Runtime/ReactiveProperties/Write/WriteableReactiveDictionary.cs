@@ -8,46 +8,34 @@ using Gaze.Utilities;
 namespace Gaze.MVVM
 {
     [System.Serializable]
-    public class WriteableReactiveDictionary<TK, TV> : WriteableReactiveProperty<IEnumerable<KeyValuePair<TK, TV>>>, IDictionary<TK, TV>, IReactiveDictionary<TK, TV>
+    public class WriteableReactiveDictionary<TK, TV> : WriteableReactiveProperty<Dictionary<TK, TV>>, IReactiveDictionary<TK, TV>, IDictionary<TK, TV>
     {
-        Dictionary<TK, TV> internalDictionary;
-
         readonly SafeAction<KeyValuePair<TK, TV>> onAdd = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>, TV> onReplace = new SafeAction<KeyValuePair<TK, TV>, TV>();
         readonly SafeAction onClear = new SafeAction();
         
-        public WriteableReactiveDictionary() => internalDictionary = new Dictionary<TK, TV>();
+        public WriteableReactiveDictionary() => Value = new Dictionary<TK, TV>();
 
-        public override IEnumerable<KeyValuePair<TK, TV>> Value
-        {
-            get => internalDictionary.ToArray();
-            set
-            {
-                internalDictionary = value.ToDictionary(pair => pair.Key, pair => pair.Value);
-                OnPropertyChangeEvent.Invoke(internalDictionary);
-            }
-        }
-
-        public ICollection<TK> Keys => internalDictionary.Keys;
-        public ICollection<TV> Values => internalDictionary.Values;
-        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => internalDictionary.GetEnumerator();
+        public ICollection<TK> Keys => Value.Keys;
+        public ICollection<TV> Values => Value.Values;
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => Value.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public bool Contains(KeyValuePair<TK, TV> item) => internalDictionary.Contains(item);
-        public int Count => internalDictionary.Count;
+        public bool Contains(KeyValuePair<TK, TV> item) => Value.Contains(item);
+        public int Count => Value.Count;
         public bool IsReadOnly => false;
-        public bool TryGetValue(TK key, out TV value) => internalDictionary.TryGetValue(key, out value);
-        public bool ContainsKey(TK key) => internalDictionary.ContainsKey(key);
+        public bool TryGetValue(TK key, out TV value) => Value.TryGetValue(key, out value);
+        public bool ContainsKey(TK key) => Value.ContainsKey(key);
         public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
         {
-            var iInternalDictionary = (IDictionary)internalDictionary;
+            var iInternalDictionary = (IDictionary)Value;
             iInternalDictionary.CopyTo(array, arrayIndex);
         }
         
         public void Add(KeyValuePair<TK, TV> item)
         {
-            internalDictionary.Add(item.Key, item.Value);
-            OnPropertyChangeEvent.Invoke(internalDictionary);
+            Value.Add(item.Key, item.Value);
+            OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(item);
         }
         
@@ -56,8 +44,8 @@ namespace Gaze.MVVM
             var result = false;
             if (Contains(item))
             {
-                internalDictionary.Remove(item.Key);
-                OnPropertyChangeEvent.Invoke(internalDictionary);
+                Value.Remove(item.Key);
+                OnPropertyChangeEvent.Invoke(Value);
                 onRemove.Invoke(item);
                 result = true;
             }
@@ -66,15 +54,15 @@ namespace Gaze.MVVM
         
         public void Clear()
         {
-            internalDictionary.Clear();
-            OnPropertyChangeEvent.Invoke(internalDictionary);
+            Value.Clear();
+            OnPropertyChangeEvent.Invoke(Value);
             onClear.Invoke();
         }
 
         public void Add(TK key, TV value)
         {
-            internalDictionary.Add(key, value);
-            OnPropertyChangeEvent.Invoke(internalDictionary);
+            Value.Add(key, value);
+            OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(new KeyValuePair<TK, TV>(key, value));
         }
       
@@ -83,9 +71,9 @@ namespace Gaze.MVVM
             var result = false;
             if (ContainsKey(key))
             {
-                var value = internalDictionary[key];
-                internalDictionary.Remove(key);
-                OnPropertyChangeEvent.Invoke(internalDictionary);
+                var value = Value[key];
+                Value.Remove(key);
+                OnPropertyChangeEvent.Invoke(Value);
                 onRemove.Invoke(new KeyValuePair<TK, TV>(key, value));
                 result = true;
             }
@@ -99,14 +87,14 @@ namespace Gaze.MVVM
         
         public TV this[TK key]
         {
-            get => internalDictionary[key];
+            get => Value[key];
             set
             {
-                var oldValue = internalDictionary[key];
-                internalDictionary[key] = value;
+                var oldValue = Value[key];
+                Value[key] = value;
                 if (!Equals(oldValue, value))
                 {
-                    OnPropertyChangeEvent.Invoke(internalDictionary);
+                    OnPropertyChangeEvent.Invoke(Value);
                     onReplace.Invoke(new KeyValuePair<TK, TV>(key, value), oldValue);
                 }
             }

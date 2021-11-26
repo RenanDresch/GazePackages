@@ -4,7 +4,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MVVM.ReadOnly
 {
-    public interface IReactiveQueue<T> : IReactiveProperty<IEnumerable<T>>
+    public interface IReactiveQueue<T> : IReactiveProperty<Queue<T>>
     {
         int Count { get; }
         T Peek();

@@ -7,6 +7,5 @@ namespace Gaze.MVVM.ReadOnly
     {
         T Value { get; }
         void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true);
-        void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<T> targetReactiveProperty);
     }
 }

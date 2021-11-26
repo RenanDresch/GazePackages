@@ -1,17 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
 
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class WriteableReactiveList<T> : WriteableReactiveProperty<IEnumerable<T>>, IReactiveList<T>, IList<T>
+    public class WriteableReactiveList<T> : WriteableReactiveProperty<List<T>>, IReactiveList<T>, IList<T>
     {
-        List<T> internalList;
-
         readonly SafeAction<T> onAdd = new SafeAction<T>();
         readonly SafeAction<T> onRemove = new SafeAction<T>();
         readonly SafeAction<(int index, T newItem, T formerItem)> onReplace = new SafeAction<(int,T,T)>();
@@ -19,83 +16,78 @@ namespace Gaze.MVVM
 
         public WriteableReactiveList(IEnumerable<T> content = null)
         {
-            internalList = new List<T>();
+            Value = new List<T>();
             if (content != null)
             {
                 foreach (var t in content)
                 {
-                    internalList.Add(t);
+                    Value.Add(t);
                 }
             }
         }
-        
-        public override IEnumerable<T> Value
-        {
-            get => internalList.ToArray();
-            set
-            {
-                internalList = value.ToList();
-                OnPropertyChangeEvent.Invoke(internalList);
-            }
-        }
 
-        public IEnumerator<T> GetEnumerator() => internalList.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => Value.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        public int Count => internalList.Count;
+        public int Count => Value.Count;
         public bool IsReadOnly => false;
-        public int IndexOf(T item) => internalList.IndexOf(item);
-        public bool Contains(T item) => internalList.Contains(item);
-        public void CopyTo(T[] array, int arrayIndex) => internalList.CopyTo(array, arrayIndex);
+        public int IndexOf(T item) => Value.IndexOf(item);
+        public bool Contains(T item) => Value.Contains(item);
+        public void CopyTo(T[] array, int arrayIndex) => Value.CopyTo(array, arrayIndex);
         
         public void Add(T item)
         {
-            internalList.Add(item);
-            OnPropertyChangeEvent.Invoke(internalList);
+            Value.Add(item);
+            OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(item);
         }
         public void Clear()
         {
-            internalList.Clear();
-            OnPropertyChangeEvent.Invoke(internalList);
+            Value.Clear();
+            OnPropertyChangeEvent.Invoke(Value);
             onClear.Invoke();
         }
         public bool Remove(T item)
         {
-            var result = internalList.Remove(item);
+            var result = Value.Remove(item);
             if (result)
             {
-                OnPropertyChangeEvent.Invoke(internalList);
+                OnPropertyChangeEvent.Invoke(Value);
                 onRemove.Invoke(item);
             }
             return result;
         }
         public void Insert(int index, T item)
         {
-            internalList.Insert(index, item);
-            OnPropertyChangeEvent.Invoke(internalList);
+            Value.Insert(index, item);
+            OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(item);
         }
         public void RemoveAt(int index)
         {
-            var removedItem = internalList[index];
-            internalList.RemoveAt(index);
-            OnPropertyChangeEvent.Invoke(internalList);
+            var removedItem = Value[index];
+            Value.RemoveAt(index);
+            OnPropertyChangeEvent.Invoke(Value);
             onRemove.Invoke(removedItem);
         }
 
         public T this[int index]
         {
-            get => internalList[index];
+            get => Value[index];
             set
             {
-                var oldValue = internalList[index];
-                internalList[index] = value;
+                var oldValue = Value[index];
+                Value[index] = value;
                 if (!Equals(oldValue, value))
                 {
-                    OnPropertyChangeEvent.Invoke(internalList);
+                    OnPropertyChangeEvent.Invoke(Value);
                     onReplace.Invoke((index, value, oldValue));
                 }
             }
+        }
+
+        void OnBoundCollectionChange(IEnumerable<T> collection)
+        {
+            Value = new List<T>(collection);
         }
 
         public void SafeBindOnAddAction(IDestroyable destroyable, Action<T> action) => onAdd.SafeBind(destroyable, action);

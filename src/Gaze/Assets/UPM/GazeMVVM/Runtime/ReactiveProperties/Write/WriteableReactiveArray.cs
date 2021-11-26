@@ -8,19 +8,17 @@ using UnityEngine;
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class WriteableReactiveArray<T> : WriteableReactiveProperty<IEnumerable<T>>, IReactiveArray<T>
+    public class WriteableReactiveArray<T> : WriteableReactiveProperty<T[]>, IReactiveArray<T>
     {
-        T[] internalArray;
-
         readonly SafeAction<(int index, T newItem, T formerItem)> onModifyItem = new SafeAction<(int,T,T)>();
 
-        public WriteableReactiveArray(int lenght = 0) => internalArray = new T[lenght];
+        public WriteableReactiveArray(int lenght = 0) => Value = new T[lenght];
 
         public WriteableReactiveArray(IEnumerable<T> content)
         {
             if (content != null)
             {
-                internalArray = content.ToArray();
+                Value = content.ToArray();
             }
             else
             {
@@ -28,28 +26,18 @@ namespace Gaze.MVVM
             }
         }
         
-        public override IEnumerable<T> Value
-        {
-            get => internalArray.ToArray();
-            set
-            {
-                internalArray = value.ToArray();
-                OnPropertyChangeEvent.Invoke(internalArray);
-            }
-        }
-        
-        public int Lenght => internalArray.Length;
+        public int Lenght => Value.Length;
 
         public T this[int index]
         {
-            get => internalArray[index];
+            get => Value[index];
             set
             {
-                var oldValue = internalArray[index];
-                internalArray[index] = value;
+                var oldValue = Value[index];
+                Value[index] = value;
                 if (!Equals(oldValue, value))
                 {
-                    OnPropertyChangeEvent.Invoke(internalArray);
+                    OnPropertyChangeEvent.Invoke(Value);
                     onModifyItem.Invoke((index, value, oldValue));
                 }
             }

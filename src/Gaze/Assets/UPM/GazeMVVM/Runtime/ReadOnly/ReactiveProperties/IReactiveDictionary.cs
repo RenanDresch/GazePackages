@@ -4,7 +4,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MVVM.ReadOnly
 {
-    public interface IReactiveDictionary<TK, TV> : IReactiveProperty<IEnumerable<KeyValuePair<TK, TV>>>
+    public interface IReactiveDictionary<TK, TV> : IReactiveProperty<Dictionary<TK, TV>>
     {
         int Count { get; }
         TV this[TK key] { get; }

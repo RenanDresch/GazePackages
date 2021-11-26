@@ -6,48 +6,36 @@ using Gaze.Utilities;
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class WriteableReactiveQueue<T> : WriteableReactiveProperty<IEnumerable<T>>, IReactiveQueue<T>
+    public class WriteableReactiveQueue<T> : WriteableReactiveProperty<Queue<T>>, IReactiveQueue<T>
     {
-        Queue<T> internalQueue;
-
         readonly SafeAction<T> onEnqueue = new SafeAction<T>();
         readonly SafeAction<T> onDequeue = new SafeAction<T>();
         readonly SafeAction onClear = new SafeAction();
         
         public WriteableReactiveQueue(T frontItem = default)
         {
-            internalQueue = new Queue<T>();
+            Value = new Queue<T>();
             if (frontItem != null)
             {
-                internalQueue.Enqueue(frontItem);
+                Value.Enqueue(frontItem);
             }
         }
 
-        public override IEnumerable<T> Value
-        {
-            get => internalQueue;
-            set
-            {
-                internalQueue = new Queue<T>(value);
-                OnPropertyChangeEvent.Invoke(internalQueue);
-            }
-        }
+        public int Count => Value.Count;
 
-        public int Count => internalQueue.Count;
-
-        public T Peek() => internalQueue.Peek();
+        public T Peek() => Value.Peek();
 
         public void Queue(T item)
         {
-            internalQueue.Enqueue(item);
-            OnPropertyChangeEvent.Invoke(internalQueue);
+            Value.Enqueue(item);
+            OnPropertyChangeEvent.Invoke(Value);
             onEnqueue.Invoke(item);
         }
         
         public T Dequeue()
         {
-            var item = internalQueue.Dequeue();
-            OnPropertyChangeEvent.Invoke(internalQueue);
+            var item = Value.Dequeue();
+            OnPropertyChangeEvent.Invoke(Value);
             if (Count < 1)
             {
                 onClear.Invoke();
@@ -61,8 +49,8 @@ namespace Gaze.MVVM
 
         public void Clear()
         {
-            internalQueue.Clear();
-            OnPropertyChangeEvent.Invoke(internalQueue);
+            Value.Clear();
+            OnPropertyChangeEvent.Invoke(Value);
             onClear.Invoke();
         }
 

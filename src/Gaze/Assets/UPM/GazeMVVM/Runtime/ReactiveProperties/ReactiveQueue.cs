@@ -9,23 +9,22 @@ namespace Gaze.MVVM
     public class ReactiveQueue<T> : IReactiveQueue<T>
     {
         public readonly WriteableReactiveQueue<T> Writer;
-        IReactiveQueue<T> Reader => Writer;
 
-        public IEnumerable<T> Value => Reader.Value;
-        public int Count => Reader.Count;
+        public Queue<T> Value => new Queue<T>(Writer.Value);
+        public int Count => Value.Count;
         
         public ReactiveQueue(T frontItem = default) => Writer = new WriteableReactiveQueue<T>(frontItem);
         
-        public T Peek() => Reader.Peek();
-        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<IEnumerable<T>> targetReactiveProperty) =>
-            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty);
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<IEnumerable<T>> action, bool invokeOnBind = true) => 
-            Reader.SafeBindOnChangeAction(destroyable, action);
+        public T Peek() => Value.Peek();
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, ReactiveQueue<T> targetReactiveProperty) =>
+            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty.Writer);
+        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Queue<T>> action, bool invokeOnBind = true) => 
+            Writer.SafeBindOnChangeAction(destroyable, action);
         public void SafeBindOnEnqueueAction(IDestroyable destroyable, Action<T> action) => 
-            Reader.SafeBindOnEnqueueAction(destroyable, action);
+            Writer.SafeBindOnEnqueueAction(destroyable, action);
         public void SafeBindOnDequeueAction(IDestroyable destroyable, Action<T> action) => 
-            Reader.SafeBindOnDequeueAction(destroyable, action);
+            Writer.SafeBindOnDequeueAction(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => 
-            Reader.SafeBindOnClearAction(destroyable, action);
+            Writer.SafeBindOnClearAction(destroyable, action);
     }
 }

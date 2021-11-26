@@ -10,7 +10,7 @@ namespace Gaze.MVVM
     {
         [SerializeField]
         protected T currentValue;
-        public virtual T Value
+        public T Value
         {
             get => currentValue;
             set => SetProperty(ref currentValue, value);
@@ -28,13 +28,13 @@ namespace Gaze.MVVM
         /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target ReactiveProperty.</param>
-        /// <param name="targetWriteableReactiveProperty">The ReactiveProperty that will bind to this one.</param>
-        public void SafeBindToReactiveProperty(IDestroyable destroyable, IReactiveProperty<T> targetReactiveProperty)
+        /// <param name="targetReactiveProperty">The ReactiveProperty that will bind to this one.</param>
+        public virtual void SafeBindToReactiveProperty(IDestroyable destroyable, WriteableReactiveProperty<T> targetReactiveProperty)
         {
             if (destroyable != null)
             {
-                Value = targetReactiveProperty.Value;
-                targetReactiveProperty.SafeBindOnChangeAction(destroyable, SetValue);
+                ForceUpdateValue(targetReactiveProperty.Value);
+                targetReactiveProperty.SafeBindOnChangeAction(destroyable, ForceUpdateValue);
             }
             else
             {
@@ -56,7 +56,7 @@ namespace Gaze.MVVM
                 action.Invoke(Value);
             }
         }
-        
+
         /// <summary>
         /// Unbinds the target ReactiveProperty OnChange trigger from this one.
         /// </summary>

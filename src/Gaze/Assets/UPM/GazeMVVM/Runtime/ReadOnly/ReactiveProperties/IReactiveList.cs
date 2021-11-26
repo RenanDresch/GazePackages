@@ -4,7 +4,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MVVM.ReadOnly
 {
-    public interface IReactiveList<T> : IReactiveProperty<IEnumerable<T>>
+    public interface IReactiveList<T> : IReactiveProperty<List<T>>
     {
         int Count { get; }
         T this[int index] { get; }

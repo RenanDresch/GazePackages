@@ -4,7 +4,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MVVM.ReadOnly
 {
-    public interface IReactiveArray<T> : IReactiveProperty<IEnumerable<T>>
+    public interface IReactiveArray<T> : IReactiveProperty<T[]>
     {
         int Lenght { get; }
         T this[int index] { get; }
