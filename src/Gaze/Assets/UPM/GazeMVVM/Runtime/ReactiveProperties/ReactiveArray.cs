@@ -25,5 +25,10 @@ namespace Gaze.MVVM
             Writer.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
         public void SafeBindOnModifyItemAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) =>
             Writer.SafeBindOnModifyItemAction(destroyable, action);
+
+
+        public void UnbindFrom(ReactiveArray<T> targetReactiveProperty) =>
+            Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
+        public void UnbindAll() => Writer.UnbindAll();
     }
 }

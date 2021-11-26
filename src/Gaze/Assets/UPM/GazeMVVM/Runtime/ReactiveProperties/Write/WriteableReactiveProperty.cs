@@ -29,7 +29,7 @@ namespace Gaze.MVVM
         /// </summary>
         /// <param name="destroyable">The destroyable object that owns the target ReactiveProperty.</param>
         /// <param name="targetReactiveProperty">The ReactiveProperty that will bind to this one.</param>
-        public virtual void SafeBindToReactiveProperty(IDestroyable destroyable, WriteableReactiveProperty<T> targetReactiveProperty)
+        public void SafeBindToReactiveProperty(IDestroyable destroyable, WriteableReactiveProperty<T> targetReactiveProperty)
         {
             if (destroyable != null)
             {
@@ -58,12 +58,13 @@ namespace Gaze.MVVM
         }
 
         /// <summary>
-        /// Unbinds the target ReactiveProperty OnChange trigger from this one.
+        /// Unbinds this ReactiveProperty OnChange trigger from the target one.
         /// </summary>
         /// <param name="writeableReactiveProperty">The ReactiveProperty that will unbind from this one</param>
-        public void UnbindToReactiveProperty(WriteableReactiveProperty<T> writeableReactiveProperty)
+        public void UnbindFromReactiveProperty(WriteableReactiveProperty<T> writeableReactiveProperty)
         {
-            writeableReactiveProperty.UnbindOnChangeAction(SetValue);
+            writeableReactiveProperty.UnbindOnChangeAction(ForceUpdateValue);
+            ForceUpdateValue(default);
         }
         
         /// <summary>
@@ -78,7 +79,7 @@ namespace Gaze.MVVM
         /// <summary>
         /// Unbinds all OnChange Action from this Reactive Property, allowing it to get collected. 
         /// </summary>
-        public virtual void UnbindAllOnChangeActions() => OnPropertyChangeEvent.UnbindAll();
+        public virtual void UnbindAll() => OnPropertyChangeEvent.UnbindAll();
 
         /// <summary>
         /// Passes a new value to this Reactive Property and forces it to invoke the OnChange trigger (even if the passed value is the same as the current one), invoking every listener as consequence.

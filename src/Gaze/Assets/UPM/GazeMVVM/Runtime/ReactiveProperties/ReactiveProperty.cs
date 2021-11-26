@@ -17,6 +17,10 @@ namespace Gaze.MVVM
 
         public void SafeBindToReactiveProperty(IDestroyable destroyable, ReactiveProperty<T> targetReactiveProperty) =>
             Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty.Writer);
+
+        public void UnbindFrom(ReactiveProperty<T> targetReactiveProperty) =>
+            Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
+        public void UnbindAll() => Writer.UnbindAll();
         
         public static implicit operator T(ReactiveProperty<T> reactiveProperty) =>
             reactiveProperty.Reader.Value;

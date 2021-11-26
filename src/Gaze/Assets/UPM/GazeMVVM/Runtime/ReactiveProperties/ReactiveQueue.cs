@@ -26,5 +26,9 @@ namespace Gaze.MVVM
             Writer.SafeBindOnDequeueAction(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => 
             Writer.SafeBindOnClearAction(destroyable, action);
+        
+        public void UnbindFrom(ReactiveQueue<T> targetReactiveProperty) =>
+            Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
+        public void UnbindAll() => Writer.UnbindAll();
     }
 }

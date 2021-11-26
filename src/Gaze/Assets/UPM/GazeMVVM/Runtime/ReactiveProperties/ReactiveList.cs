@@ -30,5 +30,9 @@ namespace Gaze.MVVM
             Reader.SafeBindOnReplaceAction(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) =>
             Reader.SafeBindOnClearAction(destroyable, action);
+        
+        public void UnbindFrom(ReactiveList<T> targetReactiveProperty) =>
+            Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
+        public void UnbindAll() => Writer.UnbindAll();
     }
 }
