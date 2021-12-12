@@ -29,6 +29,6 @@ namespace Gaze.MVVM
 
         public void UnbindFrom(ReactiveArray<T> targetReactiveProperty) =>
             Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
-        public void UnbindAll() => Writer.UnbindAll();
+        public void Unbind() => Writer.UnbindAllActions();
     }
 }

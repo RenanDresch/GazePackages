@@ -20,7 +20,7 @@ namespace Gaze.MVVM
 
         public void UnbindFrom(ReactiveProperty<T> targetReactiveProperty) =>
             Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
-        public void UnbindAll() => Writer.UnbindAll();
+        public void Unbind() => Writer.Unbind();
         
         public static implicit operator T(ReactiveProperty<T> reactiveProperty) =>
             reactiveProperty.Reader.Value;
