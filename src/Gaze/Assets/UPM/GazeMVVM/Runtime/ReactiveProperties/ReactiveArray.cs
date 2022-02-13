@@ -3,32 +3,55 @@ using System.Collections.Generic;
 using System.Linq;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
+using UnityEngine;
 
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class ReactiveArray<T> : IReactiveArray<T>
+    public class ReactiveArray<T> : ReactiveProperty<T[]>, IReactiveArray<T>
     {
-        public readonly WriteableReactiveArray<T> Writer;
+        readonly SafeAction<(int index, T newItem, T formerItem)> onModifyItem = new SafeAction<(int,T,T)>();
+
+        public ReactiveArray(int lenght = 0) => Value = new T[lenght];
+
+        public ReactiveArray(IEnumerable<T> content)
+        {
+            if (content != null)
+            {
+                Value = content.ToArray();
+            }
+            else
+            {
+                Debug.LogError("Attempting to instantiate a ReactiveArray without content");
+            }
+        }
         
-        public T[] Value => Writer.Value.ToArray();
-        public int Lenght => Writer.Lenght;
-        public T this[int index] => Writer[index];
+        public int Lenght => Value.Length;
 
-        public ReactiveArray(int lenght = 0) => Writer = new WriteableReactiveArray<T>(lenght);
+        public T this[int index]
+        {
+            get => Value[index];
+            set
+            {
+                var oldValue = Value[index];
+                Value[index] = value;
+                if (!Equals(oldValue, value))
+                {
+                    OnPropertyChangeEvent.Invoke(Value);
+                    onModifyItem.Invoke((index, value, oldValue));
+                }
+            }
+        }
+        
+        public void SafeBindOnModifyItemAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) => onModifyItem.SafeBind(destroyable, action);
 
-        public ReactiveArray(IEnumerable<T> content) => Writer = new WriteableReactiveArray<T>(content);
-
-        public void SafeBindToReactiveProperty(IDestroyable destroyable, ReactiveArray<T> targetReactiveProperty) =>
-            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty.Writer);
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<T[]> action, bool invokeOnBind = true) => 
-            Writer.SafeBindOnChangeAction(destroyable, action, invokeOnBind);
-        public void SafeBindOnModifyItemAction(IDestroyable destroyable, Action<(int index, T newItem, T formerItem)> action) =>
-            Writer.SafeBindOnModifyItemAction(destroyable, action);
-
-
-        public void UnbindFrom(ReactiveArray<T> targetReactiveProperty) =>
-            Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
-        public void Unbind() => Writer.UnbindAllActions();
+        /// <summary>
+        /// Unbinds all Actions from this Reactive Property, allowing it to get collected. 
+        /// </summary>
+        public override void Release()
+        {
+            base.Release();
+            onModifyItem.UnbindAll();
+        }
     }
 }

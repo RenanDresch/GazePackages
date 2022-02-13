@@ -6,29 +6,96 @@ using Gaze.Utilities;
 namespace Gaze.MVVM
 {
     [Serializable]
-    public class ReactiveStack<T> : IReactiveStack<T>
+    public class ReactiveStack<T> : ReactiveProperty<Stack<T>>, IReactiveStack<T>
     {
-        public readonly WriteableReactiveStack<T> Writer;
+        readonly SafeAction<T,T> onPush = new SafeAction<T, T>();
+        readonly SafeAction<T,T> onPop = new SafeAction<T, T>();
+        readonly SafeAction onClear = new SafeAction();
+        
+        public ReactiveStack(T topItem = default)
+        {
+            Value = new Stack<T>();
+            if (topItem != null)
+            {
+                Value.Push(topItem);
+            }
+        }
 
-        public Stack<T> Value => new Stack<T>(Writer.Value);
-        public int Count => Writer.Count;
+        public int Count => Value.Count;
+
+        public T Peek() => Value.Peek();
+
+        public void Push(T item)
+        {
+            var formerStackTop = default(T);
+
+            if (Count > 0)
+            {
+                formerStackTop = Peek();
+            }
+            
+            Value.Push(item);
+            OnPropertyChangeEvent.Invoke(Value);
+            onPush.Invoke(item, formerStackTop);
+        }
         
-        public ReactiveStack(T topItem = default) => Writer = new WriteableReactiveStack<T>(topItem);
+        public T Pop()
+        {
+            var item = Value.Pop();
+            OnPropertyChangeEvent.Invoke(Value);
+            if (Count < 1)
+            {
+                onClear.Invoke();
+            }
+            else
+            {
+                onPop.Invoke(item, Peek());
+            }
+            return item;
+        }
+
+        public void Clear()
+        {
+            Value.Clear();
+            OnPropertyChangeEvent.Invoke(Value);
+            onClear.Invoke();
+        }
+
+        /// <summary>
+        /// Binds an action to this Reactive Stack so it's invoked whenever a new item is pushed into the stack.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
+        /// </summary>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
+        /// <param name="action">The action to execute when a new item gets pushed into the stack.
+        /// The first argument represents the new pushed item, the second one represents the former stack top</param>
+        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) => onPush.SafeBind(destroyable, action);
+
+        /// <summary>
+        /// Binds an action to this Reactive Stack so it's invoked whenever a new item is popped from the stack.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
+        /// </summary>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
+        /// <param name="action">The action to execute when an item gets popped from the stack.
+        /// The first argument represents the popped item, the second one represents the new stack top</param>
+        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) => onPop.SafeBind(destroyable, action);
+
+        /// <summary>
+        /// Binds an action to this Reactive Stack so it's invoked whenever the stack gets empty.
+        /// If the IDestroyable is correctly setup, this binding avoids memory leaks.
+        /// </summary>
+        /// <param name="destroyable">The destroyable object that owns the target action.</param>
+        /// <param name="action">The action to execute after the last item gets popped from the stack.</param>
+        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
         
-        public T Peek() => Writer.Peek();
-        public void SafeBindToReactiveProperty(IDestroyable destroyable, ReactiveStack<T> targetReactiveProperty) =>
-            Writer.SafeBindToReactiveProperty(destroyable, targetReactiveProperty.Writer);
-        public void SafeBindOnChangeAction(IDestroyable destroyable, Action<Stack<T>> action, bool invokeOnBind = true) =>
-            Writer.SafeBindOnChangeAction(destroyable, action);
-        public void SafeBindOnPushAction(IDestroyable destroyable, Action<T, T> action) =>
-            Writer.SafeBindOnPushAction(destroyable, action);
-        public void SafeBindOnPopAction(IDestroyable destroyable, Action<T, T> action) =>
-            Writer.SafeBindOnPopAction(destroyable, action);
-        public void SafeBindOnClearAction(IDestroyable destroyable, Action action) =>
-            Writer.SafeBindOnClearAction(destroyable, action);
-        
-        public void UnbindFrom(ReactiveStack<T> targetReactiveProperty) =>
-            Writer.UnbindFromReactiveProperty(targetReactiveProperty.Writer);
-        public void Unbind() => Writer.UnbindAllActions();
+        /// <summary>
+        /// Unbinds all Actions from this Reactive Property, allowing it to get collected. 
+        /// </summary>
+        public void UnbindAllActions()
+        {
+            OnPropertyChangeEvent.UnbindAll();
+            onPush.UnbindAll();
+            onPop.UnbindAll();
+            onClear.UnbindAll();
+        }
     }
 }

@@ -3,8 +3,10 @@
     "rootNamespace": "Gaze.MVVM.Example.ViewModels",
     "references": [
         "GUID:f2edf412b1a484b7383fa43ff3be40a1",
-        "GUID:0b2dd4fafb391475f9bf553d154415e9",
         "GUID:06a73997bbb964722968a911206ca27f",
+        "GUID:0b2dd4fafb391475f9bf553d154415e9",
+        "GUID:0bd0b4e8585e810409a4f272b80ce2fe",
+        "GUID:0f534b58464054667b93d0158360d178",
         "GUID:44534f4b09a4c4a11989db86c2af526c"
     ],
     "includePlatforms": [],

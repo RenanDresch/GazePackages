@@ -3,9 +3,10 @@ using Gaze.Utilities;
 
 namespace Gaze.MVVM.ReadOnly
 {
-    public interface IReactiveProperty<T> : IUnbindable
+    public interface IReactiveProperty<T>
     {
-        T Value { get; }
-        void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind = true);
+        void SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action, bool invokeOnBind);
+        void UnbindOnChangeAction(Action<T> action);
+        void Release();
     }
 }

@@ -16,8 +16,8 @@ namespace Gaze.MVVM.Example.Views
 
         public void Present(IReactiveProperty<int> hardCurrencyAmount, IReactiveProperty<int> softCurrencyAmount)
         {
-            hardCurrencyAmount.SafeBindOnChangeAction(this, (value) => hardCurrencyAmountLabel.text = value.ToString());
-            softCurrencyAmount.SafeBindOnChangeAction(this, (value) => softCurrencyAmountLabel.text = value.ToString());
+            hardCurrencyAmount.SafeBindOnChangeAction(this, (value) => hardCurrencyAmountLabel.text = value.ToString(), true);
+            softCurrencyAmount.SafeBindOnChangeAction(this, (value) => softCurrencyAmountLabel.text = value.ToString(), true);
         }
     }
 }

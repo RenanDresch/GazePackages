@@ -1,34 +1,36 @@
 using Gaze.MVVM.Example.Services;
 using Gaze.MVVM.ReadOnly;
-using UnityEngine;
 
 namespace Gaze.MVVM.Example.ViewModels
 {
     [System.Serializable]
-    public class ExampleViewModel : ViewModel
+    public class ExampleViewModel : BaseViewModel
     {
-        [SerializeField]
-        WalletService walletService;
-
-        [SerializeField]
-        StoreService storeService;
+        StoreFeature storeFeature;
+        StoreService StoreService => storeFeature.StoreService;
         
-        public uint HardCurrencyPackSize => storeService.HardCurrencyPackSize;
-        public uint SoftCurrencyPackSize => storeService.SoftCurrencyPackSize;
+        public uint HardCurrencyPackSize => StoreService.HardCurrencyPackSize;
+        public uint SoftCurrencyPackSize => StoreService.SoftCurrencyPackSize;
+
+        public override void OnStart(IView view)
+        {
+            base.OnStart(view);
+            storeFeature = new StoreFeature(view, Container);
+        }
+
+        public IReactiveProperty<uint> HardCurrencyConsumption => Store.ReadOnlyHardCurrencyCurrentConsumption;
+        public IReactiveProperty<uint> SoftCurrencyConsumption => Store.ReadOnlySoftCurrencyCurrentConsumption;
+
+        public IReactiveProperty<int> HardCurrencyAmount => HardCurrencyWallet.ReadOnlyCurrencyAmount;
+        public IReactiveProperty<int> SoftCurrencyAmount => SoftCurrencyWallet.ReadOnlyCurrencyAmount;
         
-        public IReactiveProperty<uint> HardCurrencyConsumption => storeService.HardCurrencyCurrentConsumption;
-        public IReactiveProperty<uint> SoftCurrencyConsumption => storeService.SoftCurrencyCurrentConsumption;
+
+        public void OnPressBuyUsingHardCurrency() => StoreService.BuyItemCurrencyUsingHardCurrency();
         
-        public IReactiveProperty<int> HardCurrencyAmount => walletService.HardCurrencyAmount;
-        public IReactiveProperty<int> SoftCurrencyAmount => walletService.SoftCurrencyAmount;
-
-
-        public void OnPressBuyUsingHardCurrency() => storeService.BuyItemCurrencyUsingHardCurrency();
-
-        public void OnPressBuyUsingSoftCurrency() => storeService.BuyItemCurrencyUsingSoftCurrency();
-
-        public void OnPressBuyHardCurrency() => storeService.BuyHardCurrency();
+        public void OnPressBuyUsingSoftCurrency() => StoreService.BuyItemCurrencyUsingSoftCurrency();
         
-        public void OnPressBuySoftCurrency() => storeService.BuySoftCurrency();
+        public void OnPressBuyHardCurrency() => StoreService.BuyHardCurrency();
+        
+        public void OnPressBuySoftCurrency() => storeFeature.StoreService.BuySoftCurrency();
     }
 }

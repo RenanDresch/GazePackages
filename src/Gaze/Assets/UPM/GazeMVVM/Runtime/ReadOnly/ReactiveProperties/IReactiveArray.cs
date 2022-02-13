@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Gaze.Utilities;
 
 namespace Gaze.MVVM.ReadOnly
