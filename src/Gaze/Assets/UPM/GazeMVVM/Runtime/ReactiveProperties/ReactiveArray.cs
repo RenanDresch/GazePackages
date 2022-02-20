@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Gaze.MVVM.ReadOnly;
@@ -13,8 +12,6 @@ namespace Gaze.MVVM
         readonly SafeAction<(int index, T newItem, T formerItem)> onModifyItem = new SafeAction<(int,T,T)>();
 
         readonly Func<T, T, bool> valueComparer;
-        
-        public IEnumerator EnumeratorCache { get; private set; }
 
         ReactiveArray(Func<T, T, bool> valueComparer)
         {
@@ -24,7 +21,6 @@ namespace Gaze.MVVM
         public ReactiveArray(int lenght = 0, Func<T, T, bool> valueComparer = null) : this(valueComparer)
         {
             Value = new T[lenght];
-            CacheEnumerator();
         }
 
         public ReactiveArray(IEnumerable<T> content, Func<T, T, bool> valueComparer = null) : this(valueComparer)
@@ -43,7 +39,6 @@ namespace Gaze.MVVM
                 Value[index] = value;
                 if (!valueComparer(oldValue, value))
                 {
-                    CacheEnumerator();
                     OnPropertyChangeEvent.Invoke(Value);
                     onModifyItem.Invoke((index, value, oldValue));
                 }
@@ -59,11 +54,6 @@ namespace Gaze.MVVM
         {
             base.Release();
             onModifyItem.UnbindAll();
-        }
-        
-        void CacheEnumerator()
-        {
-            EnumeratorCache = Value.GetEnumerator();
         }
     }
 }

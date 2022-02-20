@@ -15,9 +15,7 @@ namespace Gaze.MVVM
         readonly SafeAction onClear = new SafeAction();
 
         readonly Func<T, T, bool> valueComparer;
-        
-        public IEnumerator<T> EnumeratorCache { get; private set; } = EmptyEnumerator();
-        
+
         public ReactiveList(IEnumerable<T> content = null, Func<T, T, bool> valueComparer = null)
         {
             Value = new List<T>();
@@ -28,7 +26,6 @@ namespace Gaze.MVVM
                     Value.Add(t);
                 }
             }
-            CacheEnumerator();
             this.valueComparer = valueComparer ?? ((a, b) => Equals(a,b)); 
         }
 
@@ -43,18 +40,12 @@ namespace Gaze.MVVM
         public void Add(T item)
         {
             Value.Add(item);
-            
-            CacheEnumerator();
-            
             OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(item);
         }
         public void Clear()
         {
             Value.Clear();
-            
-            CacheEnumerator();
-            
             OnPropertyChangeEvent.Invoke(Value);
             onClear.Invoke();
         }
@@ -63,8 +54,6 @@ namespace Gaze.MVVM
             var result = Value.Remove(item);
             if (result)
             {
-                CacheEnumerator();
-                
                 OnPropertyChangeEvent.Invoke(Value);
                 onRemove.Invoke(item);
             }
@@ -73,9 +62,6 @@ namespace Gaze.MVVM
         public void Insert(int index, T item)
         {
             Value.Insert(index, item);
-            
-            CacheEnumerator();
-            
             OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(item);
         }
@@ -83,9 +69,6 @@ namespace Gaze.MVVM
         {
             var removedItem = Value[index];
             Value.RemoveAt(index);
-            
-            CacheEnumerator();
-            
             OnPropertyChangeEvent.Invoke(Value);
             onRemove.Invoke(removedItem);
         }
@@ -99,8 +82,6 @@ namespace Gaze.MVVM
                 Value[index] = value;
                 if (!valueComparer(oldValue, value))
                 {
-                    CacheEnumerator();
-                    
                     OnPropertyChangeEvent.Invoke(Value);
                     onReplace.Invoke((index, value, oldValue));
                 }
@@ -127,19 +108,6 @@ namespace Gaze.MVVM
             onRemove.UnbindAll();
             onReplace.UnbindAll();
             onClear.UnbindAll();
-            EnumeratorCache.Dispose();
-        }
-        
-        void CacheEnumerator()
-        {
-            EnumeratorCache.Dispose();
-            EnumeratorCache = Value.GetEnumerator();
-        }
-        
-        //Allow null check skip
-        static IEnumerator<T> EmptyEnumerator()
-        {
-            yield break;
         }
     }
 }
