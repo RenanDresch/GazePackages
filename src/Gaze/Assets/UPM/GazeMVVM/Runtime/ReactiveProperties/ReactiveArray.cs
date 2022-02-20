@@ -1,9 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
-using UnityEngine;
 
 namespace Gaze.MVVM
 {
@@ -12,18 +12,24 @@ namespace Gaze.MVVM
     {
         readonly SafeAction<(int index, T newItem, T formerItem)> onModifyItem = new SafeAction<(int,T,T)>();
 
-        public ReactiveArray(int lenght = 0) => Value = new T[lenght];
+        readonly Func<T, T, bool> valueComparer;
+        
+        public IEnumerator Enumerator { get; private set; }
 
-        public ReactiveArray(IEnumerable<T> content)
+        ReactiveArray(Func<T, T, bool> valueComparer)
         {
-            if (content != null)
-            {
-                Value = content.ToArray();
-            }
-            else
-            {
-                Debug.LogError("Attempting to instantiate a ReactiveArray without content");
-            }
+            this.valueComparer = valueComparer ?? ((a, b) => Equals(a,b));
+        }
+
+        public ReactiveArray(int lenght = 0, Func<T, T, bool> valueComparer = null) : this(valueComparer)
+        {
+            Value = new T[lenght];
+            CacheEnumerator();
+        }
+
+        public ReactiveArray(IEnumerable<T> content, Func<T, T, bool> valueComparer = null) : this(valueComparer)
+        {
+            Value = content.ToArray();
         }
         
         public int Lenght => Value.Length;
@@ -35,8 +41,10 @@ namespace Gaze.MVVM
             {
                 var oldValue = Value[index];
                 Value[index] = value;
-                if (!Equals(oldValue, value))
+                if (!valueComparer(oldValue, value))
                 {
+                    CacheEnumerator();
+                    
                     OnPropertyChangeEvent.Invoke(Value);
                     onModifyItem.Invoke((index, value, oldValue));
                 }
@@ -52,6 +60,11 @@ namespace Gaze.MVVM
         {
             base.Release();
             onModifyItem.UnbindAll();
+        }
+        
+        void CacheEnumerator()
+        {
+            Enumerator = Value.GetEnumerator();
         }
     }
 }

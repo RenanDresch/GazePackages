@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Gaze.MVVM.ReadOnly;
 using Gaze.Utilities;
 using UnityEngine;
@@ -18,8 +19,11 @@ namespace Gaze.MVVM
 
         protected readonly SafeAction<T> OnPropertyChangeEvent = new SafeAction<T>();
 
-        public ReactiveProperty(T value = default)
+        protected readonly Func<T, T, bool> Comparer;
+        
+        public ReactiveProperty(T value = default, Func<T,T,bool> comparer = null)
         {
+            Comparer = comparer ?? ((a, b) => Equals(a,b));
             currentValue = value;
         }
         
@@ -96,7 +100,7 @@ namespace Gaze.MVVM
 
         void SetProperty(ref T storedValue, T value, bool forceUpdate = false)
         {
-            if (forceUpdate || !Equals(storedValue, value))
+            if (forceUpdate || !Comparer(storedValue, value))
             {
                 currentValue = value;
                 OnPropertyChangeEvent.Invoke(value);

@@ -14,13 +14,22 @@ namespace Gaze.MVVM
         readonly SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>, TV> onReplace = new SafeAction<KeyValuePair<TK, TV>, TV>();
         readonly SafeAction onClear = new SafeAction();
-        
-        public ReactiveDictionary() => Value = new Dictionary<TK, TV>();
+
+        readonly Func<TV, TV, bool> valueComparer;
+
+        public IEnumerator<KeyValuePair<TK, TV>> Enumerator { get; private set; }
+
+        public ReactiveDictionary(Func<TV, TV, bool> valueComparer = null)
+        {
+            Value = new Dictionary<TK, TV>();
+            this.valueComparer = valueComparer ?? ((a, b) => Equals(a,b));
+            CacheEnumerator();
+        }
 
         public ICollection<TK> Keys => Value.Keys;
         public ICollection<TV> Values => Value.Values;
-        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => Value.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => Enumerator;
+        IEnumerator IEnumerable.GetEnumerator() => Enumerator;
         public bool Contains(KeyValuePair<TK, TV> item) => Value.Contains(item);
         public int Count => Value.Count;
         public bool IsReadOnly => false;
@@ -37,24 +46,33 @@ namespace Gaze.MVVM
             Value.Add(item.Key, item.Value);
             OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(item);
+            
+            CacheEnumerator();
         }
-        
+
         public bool Remove(KeyValuePair<TK, TV> item)
         {
             var result = false;
             if (Contains(item))
             {
                 Value.Remove(item.Key);
+                
+                CacheEnumerator();
+                
                 OnPropertyChangeEvent.Invoke(Value);
                 onRemove.Invoke(item);
                 result = true;
             }
+            
             return result;
         }
         
         public void Clear()
         {
             Value.Clear();
+            
+            CacheEnumerator();
+            
             OnPropertyChangeEvent.Invoke(Value);
             onClear.Invoke();
         }
@@ -62,6 +80,9 @@ namespace Gaze.MVVM
         public void Add(TK key, TV value)
         {
             Value.Add(key, value);
+            
+            CacheEnumerator();
+            
             OnPropertyChangeEvent.Invoke(Value);
             onAdd.Invoke(new KeyValuePair<TK, TV>(key, value));
         }
@@ -73,6 +94,9 @@ namespace Gaze.MVVM
             {
                 var value = Value[key];
                 Value.Remove(key);
+                
+                CacheEnumerator();
+                
                 OnPropertyChangeEvent.Invoke(Value);
                 onRemove.Invoke(new KeyValuePair<TK, TV>(key, value));
                 result = true;
@@ -92,8 +116,10 @@ namespace Gaze.MVVM
             {
                 var oldValue = ContainsKey(key) ? Value[key] : default;
                 Value[key] = value;
-                if (!Equals(oldValue, value))
+                if (!valueComparer(oldValue, value))
                 {
+                    CacheEnumerator();
+                    
                     OnPropertyChangeEvent.Invoke(Value);
                     onReplace.Invoke(new KeyValuePair<TK, TV>(key, value), oldValue);
                 }
@@ -110,6 +136,13 @@ namespace Gaze.MVVM
             onRemove.UnbindAll();
             onReplace.UnbindAll();
             onClear.UnbindAll();
+            Enumerator.Dispose();
+        }
+        
+        void CacheEnumerator()
+        {
+            Enumerator.Dispose();
+            Enumerator = Value.GetEnumerator();
         }
     }
 }
