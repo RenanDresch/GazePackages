@@ -19,7 +19,16 @@ namespace Gaze.MVVM
 
         readonly Func<TV, TV, bool> valueComparer;
 
-        public IEnumerator<KeyValuePair<TK, TV>> Enumerator { get; private set; } = EmptyEnumerator();
+        IEnumerator<KeyValuePair<TK, TV>> enumerator = EmptyEnumerator();
+        public IEnumerator<KeyValuePair<TK, TV>> Enumerator
+        {
+            get
+            {
+                enumerator.Reset();
+                return enumerator;
+            }
+            set => enumerator = value;
+        }
 
         public ReactiveDictionary(Func<TV, TV, bool> valueComparer = null)
         {

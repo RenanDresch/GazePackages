@@ -16,7 +16,16 @@ namespace Gaze.MVVM
 
         readonly Func<T, T, bool> valueComparer;
 
-        public IEnumerator<T> Enumerator { get; private set; } = EmptyEnumerator();
+        IEnumerator<T> enumerator = EmptyEnumerator();
+        public IEnumerator<T> Enumerator
+        {
+            get
+            {
+                enumerator.Reset();
+                return enumerator;
+            }
+            set => enumerator = value;
+        }
         
         public ReactiveList(IEnumerable<T> content = null, Func<T, T, bool> valueComparer = null)
         {
