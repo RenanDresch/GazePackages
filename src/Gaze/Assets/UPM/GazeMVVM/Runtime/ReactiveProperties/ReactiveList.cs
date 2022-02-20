@@ -15,8 +15,8 @@ namespace Gaze.MVVM
         readonly SafeAction onClear = new SafeAction();
 
         readonly Func<T, T, bool> valueComparer;
-        
-        public IEnumerator<T> Enumerator { get; private set; }
+
+        public IEnumerator<T> Enumerator { get; private set; } = EmptyEnumerator();
         
         public ReactiveList(IEnumerable<T> content = null, Func<T, T, bool> valueComparer = null)
         {
@@ -134,6 +134,12 @@ namespace Gaze.MVVM
         {
             Enumerator.Dispose();
             Enumerator = Value.GetEnumerator();
+        }
+        
+        //Allow null check skip
+        static IEnumerator<T> EmptyEnumerator()
+        {
+            yield break;
         }
     }
 }

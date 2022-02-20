@@ -1,6 +1,6 @@
 {
   "name": "com.gaze.mvvm",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "displayName": "Gaze MVVM",
   "description": "A SOLID MVVM architecture framework for Unity.",
   "unity": "2019.1",
