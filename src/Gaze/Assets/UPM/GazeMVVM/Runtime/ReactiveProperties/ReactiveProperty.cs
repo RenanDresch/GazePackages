@@ -9,6 +9,8 @@ namespace Gaze.MVVM
     [Serializable]
     public class ReactiveProperty<T> : IReactiveProperty<T>
     {
+        readonly Guid propertyId = Guid.NewGuid();
+        
         [SerializeField]
         protected T currentValue;
         public T Value
@@ -105,6 +107,23 @@ namespace Gaze.MVVM
                 currentValue = value;
                 OnPropertyChangeEvent.Invoke(value);
             }
+        }
+        
+        public override bool Equals(object obj)
+        {
+            var otherProperty = (ReactiveProperty<T>)obj;
+            return otherProperty?.propertyId == propertyId;
+        }
+        
+        protected bool Equals(ReactiveProperty<T> other)
+        {
+            return other.propertyId == propertyId;
+        }
+        
+        public override int GetHashCode()
+        {
+            var hashCode = propertyId.GetHashCode();
+            return hashCode;
         }
 
         public static implicit operator T(ReactiveProperty<T> reactiveProperty) => reactiveProperty.Value;
