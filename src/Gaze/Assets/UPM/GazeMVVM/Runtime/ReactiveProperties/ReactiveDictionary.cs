@@ -19,16 +19,7 @@ namespace Gaze.MVVM
 
         readonly Func<TV, TV, bool> valueComparer;
 
-        IEnumerator<KeyValuePair<TK, TV>> enumerator = EmptyEnumerator();
-        public IEnumerator<KeyValuePair<TK, TV>> Enumerator
-        {
-            get
-            {
-                enumerator.Reset();
-                return enumerator;
-            }
-            set => enumerator = value;
-        }
+        public IEnumerator<KeyValuePair<TK, TV>> EnumeratorCache { get; private set; } = EmptyEnumerator();
 
         public ReactiveDictionary(Func<TV, TV, bool> valueComparer = null)
         {
@@ -44,8 +35,8 @@ namespace Gaze.MVVM
         
         public ICollection<TK> Keys => Value.Keys;
         public ICollection<TV> Values => Value.Values;
-        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => Enumerator;
-        IEnumerator IEnumerable.GetEnumerator() => Enumerator;
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => Value.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public bool Contains(KeyValuePair<TK, TV> item) => Value.Contains(item);
         public int Count => Value.Count;
         public bool IsReadOnly => false;
@@ -139,12 +130,21 @@ namespace Gaze.MVVM
             }
             set
             {
-                var oldValue = ContainsKey(key) ? Value[key] : default;
-                Value[key] = value;
+                if (!TryGetValue(key, out var oldValue))
+                {
+                    oldValue = instantiator();
+                    Value[key] = value;
+                    
+                    CacheEnumerator();
+                }
+                else
+                {
+                    Value[key] = value;
+                }
+
                 if (!valueComparer(oldValue, value))
                 {
                     CacheEnumerator();
-                    
                     OnPropertyChangeEvent.Invoke(Value);
                     onReplace.Invoke(new KeyValuePair<TK, TV>(key, value), oldValue);
                 }
@@ -161,13 +161,13 @@ namespace Gaze.MVVM
             onRemove.UnbindAll();
             onReplace.UnbindAll();
             onClear.UnbindAll();
-            Enumerator.Dispose();
+            EnumeratorCache.Dispose();
         }
         
         void CacheEnumerator()
         {
-            Enumerator.Dispose();
-            Enumerator = Value.GetEnumerator();
+            EnumeratorCache.Dispose();
+            EnumeratorCache = Value.GetEnumerator();
         }
 
         //Allow null check skip

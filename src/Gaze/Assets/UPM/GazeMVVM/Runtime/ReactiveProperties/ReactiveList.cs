@@ -15,17 +15,8 @@ namespace Gaze.MVVM
         readonly SafeAction onClear = new SafeAction();
 
         readonly Func<T, T, bool> valueComparer;
-
-        IEnumerator<T> enumerator = EmptyEnumerator();
-        public IEnumerator<T> Enumerator
-        {
-            get
-            {
-                enumerator.Reset();
-                return enumerator;
-            }
-            set => enumerator = value;
-        }
+        
+        public IEnumerator<T> EnumeratorCache { get; private set; } = EmptyEnumerator();
         
         public ReactiveList(IEnumerable<T> content = null, Func<T, T, bool> valueComparer = null)
         {
@@ -41,8 +32,8 @@ namespace Gaze.MVVM
             this.valueComparer = valueComparer ?? ((a, b) => Equals(a,b)); 
         }
 
-        public IEnumerator<T> GetEnumerator() => Enumerator;
-        IEnumerator IEnumerable.GetEnumerator() => Enumerator;
+        public IEnumerator<T> GetEnumerator() => Value.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public int Count => Value.Count;
         public bool IsReadOnly => false;
         public int IndexOf(T item) => Value.IndexOf(item);
@@ -136,13 +127,13 @@ namespace Gaze.MVVM
             onRemove.UnbindAll();
             onReplace.UnbindAll();
             onClear.UnbindAll();
-            Enumerator.Dispose();
+            EnumeratorCache.Dispose();
         }
         
         void CacheEnumerator()
         {
-            Enumerator.Dispose();
-            Enumerator = Value.GetEnumerator();
+            EnumeratorCache.Dispose();
+            EnumeratorCache = Value.GetEnumerator();
         }
         
         //Allow null check skip
