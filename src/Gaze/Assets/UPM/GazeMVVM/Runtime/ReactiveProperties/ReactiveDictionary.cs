@@ -28,7 +28,7 @@ namespace Gaze.MVVM
             CacheEnumerator();
         }
 
-        public ReactiveDictionary(Func<TV> instantiator) : this()
+        public ReactiveDictionary(Func<TV> instantiator, Func<TV, TV, bool> valueComparer = null) : this(valueComparer)
         {
             this.instantiator = instantiator;
         }
