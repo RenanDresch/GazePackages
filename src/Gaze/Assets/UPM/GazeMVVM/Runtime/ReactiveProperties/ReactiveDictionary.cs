@@ -10,6 +10,8 @@ namespace Gaze.MVVM
     [Serializable]
     public class ReactiveDictionary<TK, TV> : ReactiveProperty<Dictionary<TK, TV>>, IReactiveDictionary<TK, TV>, IDictionary<TK, TV>
     {
+        private readonly Func<TV> instantiator = () => default;
+        
         readonly SafeAction<KeyValuePair<TK, TV>> onAdd = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>, TV> onReplace = new SafeAction<KeyValuePair<TK, TV>, TV>();
@@ -26,6 +28,11 @@ namespace Gaze.MVVM
             CacheEnumerator();
         }
 
+        public ReactiveDictionary(Func<TV> instantiator) : this()
+        {
+            this.instantiator = instantiator;
+        }
+        
         public ICollection<TK> Keys => Value.Keys;
         public ICollection<TV> Values => Value.Values;
         public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator() => Enumerator;
@@ -111,7 +118,16 @@ namespace Gaze.MVVM
         
         public TV this[TK key]
         {
-            get => Value[key];
+            get
+            {
+                if (!TryGetValue(key, out var value))
+                {
+                    value = instantiator();
+                    Add(key, value);
+                }
+
+                return value;
+            }
             set
             {
                 var oldValue = ContainsKey(key) ? Value[key] : default;
