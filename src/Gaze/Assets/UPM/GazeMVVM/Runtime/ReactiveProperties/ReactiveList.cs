@@ -16,9 +16,9 @@ namespace Gaze.MVVM
 
         readonly Func<T, T, bool> valueComparer;
 
-        public ReactiveList(IEnumerable<T> content = null, Func<T, T, bool> valueComparer = null)
+        public ReactiveList(int capacity, IEnumerable<T> content = null, Func<T, T, bool> valueComparer = null)
         {
-            Value = new List<T>();
+            Value = new List<T>(capacity);
             if (content != null)
             {
                 foreach (var t in content)

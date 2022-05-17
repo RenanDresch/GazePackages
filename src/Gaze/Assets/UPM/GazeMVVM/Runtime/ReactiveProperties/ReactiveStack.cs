@@ -12,9 +12,9 @@ namespace Gaze.MVVM
         readonly SafeAction<T,T> onPop = new SafeAction<T, T>();
         readonly SafeAction onClear = new SafeAction();
         
-        public ReactiveStack(T topItem = default)
+        public ReactiveStack(int capacity, T topItem = default)
         {
-            Value = new Stack<T>();
+            Value = new Stack<T>(capacity);
             if (topItem != null)
             {
                 Value.Push(topItem);

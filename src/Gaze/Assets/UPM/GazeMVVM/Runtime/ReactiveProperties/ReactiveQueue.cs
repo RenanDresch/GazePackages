@@ -12,9 +12,9 @@ namespace Gaze.MVVM
         readonly SafeAction<T> onDequeue = new SafeAction<T>();
         readonly SafeAction onClear = new SafeAction();
         
-        public ReactiveQueue(T frontItem = default)
+        public ReactiveQueue(int capacity, T frontItem = default)
         {
-            Value = new Queue<T>();
+            Value = new Queue<T>(capacity);
             if (frontItem != null)
             {
                 Value.Enqueue(frontItem);

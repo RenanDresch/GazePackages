@@ -19,13 +19,13 @@ namespace Gaze.MVVM
 
         readonly Func<TV, TV, bool> valueComparer;
 
-        public ReactiveDictionary(Func<TV, TV, bool> valueComparer = null)
+        public ReactiveDictionary(int capacity, Func<TV, TV, bool> valueComparer = null)
         {
-            Value = new Dictionary<TK, TV>();
+            Value = new Dictionary<TK, TV>(capacity);
             this.valueComparer = valueComparer ?? ((a, b) => Equals(a,b));
         }
 
-        public ReactiveDictionary(Func<TV> instantiator, Func<TV, TV, bool> valueComparer = null) : this(valueComparer)
+        public ReactiveDictionary(Func<TV> instantiator, int capacity, Func<TV, TV, bool> valueComparer = null) : this(capacity, valueComparer)
         {
             this.instantiator = instantiator;
         }
