@@ -13,6 +13,7 @@ namespace Gaze.MVVM
         readonly Func<TV> instantiator = () => default;
         
         readonly SafeAction<KeyValuePair<TK, TV>> onAdd = new SafeAction<KeyValuePair<TK, TV>>();
+        readonly SafeAction<KeyValuePair<TK, TV>> onSet = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>> onRemove = new SafeAction<KeyValuePair<TK, TV>>();
         readonly SafeAction<KeyValuePair<TK, TV>, TV> onReplace = new SafeAction<KeyValuePair<TK, TV>, TV>();
         readonly SafeAction onClear = new SafeAction();
@@ -77,7 +78,9 @@ namespace Gaze.MVVM
         {
             Value.Add(key, value);
             OnPropertyChangeEvent.Invoke(Value);
-            onAdd.Invoke(new KeyValuePair<TK, TV>(key, value));
+            var keyValuePair = new KeyValuePair<TK, TV>(key, value);
+            onSet.Invoke(keyValuePair);
+            onAdd.Invoke(keyValuePair);
         }
       
         public bool Remove(TK key)
@@ -97,6 +100,7 @@ namespace Gaze.MVVM
         public void SafeBindOnAddAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) => onAdd.SafeBind(destroyable, action);
         public void SafeBindOnRemoveAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) => onRemove.SafeBind(destroyable, action);
         public void SafeBindOnReplaceAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>, TV> action) => onReplace.SafeBind(destroyable, action);
+        public void SafeBindOnSetAction(IDestroyable destroyable, Action<KeyValuePair<TK, TV>> action) => onSet.SafeBind(destroyable, action);
         public void SafeBindOnClearAction(IDestroyable destroyable, Action action) => onClear.SafeBind(destroyable, action);
         
         public TV this[TK key]
@@ -116,13 +120,11 @@ namespace Gaze.MVVM
                 if (!TryGetValue(key, out var oldValue))
                 {
                     oldValue = instantiator();
-                    Value[key] = value;
                 }
-                else
-                {
-                    Value[key] = value;
-                }
-
+                
+                Value[key] = value;
+                onSet.Invoke(new KeyValuePair<TK, TV>(key, value));
+                
                 if (!valueComparer(oldValue, value))
                 {
                     OnPropertyChangeEvent.Invoke(Value);
@@ -141,6 +143,7 @@ namespace Gaze.MVVM
             onRemove.UnbindAll();
             onReplace.UnbindAll();
             onClear.UnbindAll();
+            onSet.UnbindAll();
         }
     }
 }
