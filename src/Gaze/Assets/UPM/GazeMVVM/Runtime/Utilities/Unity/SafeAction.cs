@@ -28,7 +28,7 @@ namespace Gaze.Utilities
             this.action -= action;
         }
         
-        public void UnbindAll()
+        public void Release()
         {
             action = null;
         }
@@ -64,7 +64,7 @@ namespace Gaze.Utilities
             this.action -= action;
         }
 
-        public void UnbindAll()
+        public void Release()
         {
             action = null;
         }
@@ -100,7 +100,7 @@ namespace Gaze.Utilities
             this.action -= action;
         }
         
-        public void UnbindAll()
+        public void Release()
         {
             action = null;
         }
@@ -108,6 +108,42 @@ namespace Gaze.Utilities
         public void Invoke(T1 valueA, T2 valueB)
         {
             action?.Invoke(valueA, valueB);
+        }
+    }
+    
+    public class SafeAction<T1,T2,T3>
+    {
+        Action<T1,T2,T3> action;
+
+        public bool SafeBind(IDestroyable destroyable, Action<T1,T2,T3> action)
+        {
+            var bindSuccessful = false;
+            if (destroyable != null)
+            {
+                this.action += action;
+                destroyable.OnDestroyEvent += () => this.action -= action;
+                bindSuccessful = true;
+            }
+            else
+            {
+                Debug.LogError("Cannot safely bind to a reactive property without a lifecycle observer");
+            }
+            return bindSuccessful;
+        }
+
+        public void Unbind(Action<T1,T2,T3> action)
+        {
+            this.action -= action;
+        }
+        
+        public void Release()
+        {
+            action = null;
+        }
+        
+        public void Invoke(T1 valueA, T2 valueB, T3 valueC)
+        {
+            action?.Invoke(valueA, valueB, valueC);
         }
     }
 }

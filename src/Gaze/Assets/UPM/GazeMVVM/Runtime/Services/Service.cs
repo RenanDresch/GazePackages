@@ -8,7 +8,7 @@ namespace Gaze.MVVM.Services
 
         public Service(IDestroyable destroyable)
         {
-            this.Destroyable = destroyable;
+            Destroyable = destroyable;
         }
     }
 }

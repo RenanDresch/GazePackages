@@ -1,0 +1,21 @@
+{
+    "name": "MVVM.Services",
+    "rootNamespace": "MVVM.Services",
+    "references": [
+        "GUID:f2edf412b1a484b7383fa43ff3be40a1",
+        "GUID:3dc8df66ac4554c9bb8695084db39ff4",
+        "GUID:3867f88e164294b2cafc7a4fd41668da",
+        "GUID:06a73997bbb964722968a911206ca27f",
+        "GUID:4bd585da664a44bec8d4ea8e5fed2780",
+        "GUID:3b3473da2f26e49d991b6318efce966a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

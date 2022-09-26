@@ -1,0 +1,20 @@
+{
+    "name": "MVVM.Views",
+    "rootNamespace": "MVVM.Views",
+    "references": [
+        "GUID:f2edf412b1a484b7383fa43ff3be40a1",
+        "GUID:471369295e0324876bcc20b9381a270e",
+        "GUID:0b2dd4fafb391475f9bf553d154415e9",
+        "GUID:06a73997bbb964722968a911206ca27f",
+        "GUID:558a5a548c1d144e49b51afe72f06116"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

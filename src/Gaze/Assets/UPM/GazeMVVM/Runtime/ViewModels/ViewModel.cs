@@ -1,5 +1,3 @@
-using Gaze.MVVM.ReadOnly;
-
 namespace Gaze.MVVM
 {
     public abstract class ViewModel : IViewModel

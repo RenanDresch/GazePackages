@@ -4,27 +4,27 @@
 //     {
 //         public static void Add<T>(this ReactiveList<T> reactiveList, T newItem)
 //         {
-//             reactiveList.Add(newItem);
+//             reactiveList.Writer.Add(newItem);
 //         }
 //         
 //         public static bool Remove<T>(this ReactiveList<T> reactiveList, T item)
 //         {
-//             return reactiveList.Remove(item);
+//             return reactiveList.Writer.Remove(item);
 //         }
 //         
 //         public static void Insert<T>(this ReactiveList<T> reactiveList, int index, T newItem)
 //         {
-//             reactiveList.Insert(index, newItem);
+//             reactiveList.Writer.Insert(index, newItem);
 //         }
 //         
 //         public static void RemoveAt<T>(this ReactiveList<T> reactiveList, int index)
 //         {
-//             reactiveList.RemoveAt(index);
+//             reactiveList.Writer.RemoveAt(index);
 //         }
 //         
 //         public static void Clear<T>(this ReactiveList<T> reactiveList)
 //         {
-//             reactiveList.Clear();
+//             reactiveList.Writer.Clear();
 //         }
 //     }
 // }
