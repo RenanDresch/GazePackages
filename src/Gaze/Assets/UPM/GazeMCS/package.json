@@ -1,0 +1,28 @@
+{
+  "name": "com.gaze.mcs",
+  "version": "0.1.23",
+  "displayName": "Gaze MCS",
+  "description": "A SOLID MCS architecture framework for Unity.",
+  "unity": "2019.1",
+  "dependencies": {},
+  "keywords": [
+    "gaze",
+    "mcs",
+    "architecture",
+    "framework"
+  ],
+  "author": {
+    "name": "Renan Dresch",
+    "email": "renandreschmartins@gmail.com",
+    "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeMVVM"
+  },
+  "license": "MIT",
+  "category": "Architechture",
+  "samples": [
+    {
+      "displayName": "MCS Framework Assembly Template",
+      "description": "Add an Assembly/Folder template to get started with the MCS architecture",
+      "path": "Samples~/MCSFramework"
+    }
+  ]
+}
