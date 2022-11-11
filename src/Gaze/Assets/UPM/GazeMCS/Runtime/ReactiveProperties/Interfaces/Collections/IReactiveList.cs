@@ -3,7 +3,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MCS
 {
-    public interface IReactiveList<T> : IReactiveCollection<IReactiveList<T>, int, T, T, T>, IReleasable
+    public interface IReactiveList<T> : IReactiveCollection<IReactiveList<T>, int, T, T, T>, IReleasable, IResettable
     {
         int IndexOf(T item);
 

@@ -8,6 +8,7 @@ namespace Gaze.MCS
     public class ReactiveProperty<T> : ReactiveComparable<IReactiveProperty<T>, T>, IReactiveProperty<T>
     {
         readonly Guid propertyId = Guid.NewGuid();
+        readonly T initialValue;
         
         [SerializeField]
         T currentValue;
@@ -25,7 +26,7 @@ namespace Gaze.MCS
 
         public ReactiveProperty(T value = default)
         {
-            currentValue = value;
+            initialValue = currentValue = value;
         }
 
         public void ForceUpdateValue()
@@ -100,6 +101,11 @@ namespace Gaze.MCS
         {
             var hashCode = propertyId.GetHashCode();
             return hashCode;
+        }
+
+        public void Reset()
+        {
+            Value = initialValue;
         }
     }
 }

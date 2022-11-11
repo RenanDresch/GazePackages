@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Gaze.Utilities;
 
 namespace Gaze.MCS
@@ -9,6 +10,7 @@ namespace Gaze.MCS
     public class ReactiveStack<T> : IReactiveStack<T>
     {
         readonly Stack<IReactiveProperty<T>> internalStack;
+        readonly Stack<IReactiveProperty<T>> initialCollection;
 
         readonly SafeAction<IReactiveStack<T>> onChange = new SafeAction<IReactiveStack<T>>();
         readonly SafeAction<IReactiveProperty<T>> onPush = new SafeAction<IReactiveProperty<T>>();
@@ -35,7 +37,7 @@ namespace Gaze.MCS
         /// Instantiates a ReactiveStack passing an existing collection
         /// </summary>
         /// <param name="stack">Collection to be used internally</param>
-        public ReactiveStack(Stack<IReactiveProperty<T>> stack) => internalStack = stack;
+        public ReactiveStack(Stack<IReactiveProperty<T>> stack) => initialCollection = internalStack = stack;
         
         /// <summary>
         /// Pushes item to the stack top, triggering both OnChange and OnPush bindings, on that order
@@ -147,5 +149,16 @@ namespace Gaze.MCS
         
         public IEnumerator<IReactiveProperty<T>> GetEnumerator() => internalStack.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => internalStack.GetEnumerator();
+        public void Reset()
+        {
+            internalStack.Clear();
+            if (initialCollection != null)
+            {
+                foreach (var property in initialCollection.Reverse())
+                {
+                    internalStack.Push(property);
+                }
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MCS
 {
-    public interface IReactiveQueue<T> : IReadOnlyCollection<IReactiveProperty<T>>, IChangeable<IReactiveQueue<T>>, IPeekable<T>, IClearable<IReactiveQueue<T>>, IReleasable
+    public interface IReactiveQueue<T> : IReadOnlyCollection<IReactiveProperty<T>>, IChangeable<IReactiveQueue<T>>, IPeekable<T>, IClearable<IReactiveQueue<T>>, IReleasable, IResettable
     {
         /// <summary>
         /// Enqueues the passed item

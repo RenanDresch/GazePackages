@@ -11,11 +11,12 @@ namespace Gaze.MCS
         IReactiveDictionary<TK, TV>
     {
         readonly Dictionary<TK, IReactiveProperty<TV>> internalDictionary;
+        readonly Dictionary<TK, IReactiveProperty<TV>> initialCollection;
 
         public ReactiveDictionary(int capacity) =>
             internalDictionary = new Dictionary<TK, IReactiveProperty<TV>>(capacity);
         
-        public ReactiveDictionary(Dictionary<TK, IReactiveProperty<TV>> collection) => internalDictionary = collection;
+        public ReactiveDictionary(Dictionary<TK, IReactiveProperty<TV>> collection) => initialCollection = internalDictionary = collection;
         
         protected override IReactiveDictionary<TK, TV> Builder => this;
         
@@ -66,5 +67,16 @@ namespace Gaze.MCS
         public IEnumerator<KeyValuePair<TK, IReactiveProperty<TV>>> GetEnumerator() => internalDictionary.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public void Reset()
+        {
+            internalDictionary.Clear();
+            if (initialCollection != null)
+            {
+                foreach (var (key, value) in initialCollection)
+                {
+                    internalDictionary.Add(key, value);
+                }
+            }
+        }
     }
 }

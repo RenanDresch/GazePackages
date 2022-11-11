@@ -8,6 +8,7 @@ namespace Gaze.MCS
     public class ReactiveList<T> : ReactiveCollection<IReactiveList<T>, int, T, T, T>, IReactiveList<T>
     {
         readonly List<IReactiveProperty<T>> internalList;
+        readonly List<IReactiveProperty<T>> initialCollection;
         
         readonly SafeAction<(int index, IReactiveProperty<T> newItem)> onInsert = new SafeAction<(int index, IReactiveProperty<T> newItem)>();
         readonly SafeAction<(int index, IReactiveProperty<T> item)> onRemoveAt = new SafeAction<(int index, IReactiveProperty<T> item)>();
@@ -111,6 +112,15 @@ namespace Gaze.MCS
             base.Release();
             onInsert.Release();
             onRemoveAt.Release();
+        }
+
+        public void Reset()
+        {
+            internalList.Clear();
+            if (initialCollection != null)
+            {
+                internalList.AddRange(initialCollection);
+            }
         }
     }
 }

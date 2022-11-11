@@ -7,6 +7,7 @@ namespace Gaze.MCS
     public class ReactiveArray<T> : ReactiveReadOnlyCollection<IReactiveArray<T>, int, T>, IReactiveArray<T>
     {
         readonly IReactiveProperty<T>[] internalArray;
+        readonly IReactiveProperty<T>[] initialCollection;
         
         protected override IReactiveArray<T> Builder => this;
 
@@ -31,12 +32,19 @@ namespace Gaze.MCS
             }
         }
         
-        public ReactiveArray(IReactiveProperty<T>[] collection) => internalArray = collection;
+        public ReactiveArray(IReactiveProperty<T>[] collection) => initialCollection = internalArray = collection;
 
         public bool IsSynchronized => internalArray.IsSynchronized;
         public object SyncRoot => internalArray.SyncRoot;
         
         public void CopyTo(Array array, int index) => internalArray.CopyTo(array, index);
         IEnumerator IEnumerable.GetEnumerator() => internalArray.GetEnumerator();
+        public void Reset()
+        {
+            for (var i = 0; i < internalArray.Length; i++)
+            {
+                internalArray[i] = initialCollection != null ? initialCollection[i] : new ReactiveProperty<T>(GetDefaultValue());
+            }
+        }
     }
 }

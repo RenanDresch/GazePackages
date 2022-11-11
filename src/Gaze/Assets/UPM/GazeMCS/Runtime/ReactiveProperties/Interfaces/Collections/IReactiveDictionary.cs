@@ -6,7 +6,7 @@ namespace Gaze.MCS
         ICustomComparable<IReactiveDictionary<TK, TV>, TV>,
         IReactiveCollection<IReactiveDictionary<TK, TV>, TK, TV, (TK key, TV value), TK>,
         IEnumerable<KeyValuePair<TK,IReactiveProperty<TV>>>,
-        IReleasable
+        IReleasable, IResettable
     {
         public void Add(TK key, TV value);
     }

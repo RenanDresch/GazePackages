@@ -3,7 +3,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MCS
 {
-    public interface IReactiveProperty<T> : ICustomComparable<IReactiveProperty<T>, T>, IReleasable
+    public interface IReactiveProperty<T> : ICustomComparable<IReactiveProperty<T>, T>, IReleasable, IResettable
     {
         T Value { get; set; }
         void ForceUpdateValue();

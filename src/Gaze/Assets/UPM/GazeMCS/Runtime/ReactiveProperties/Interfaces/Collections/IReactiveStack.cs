@@ -4,7 +4,7 @@ using Gaze.Utilities;
 
 namespace Gaze.MCS
 {
-    public interface IReactiveStack<T> : IReadOnlyCollection<IReactiveProperty<T>>, IChangeable<IReactiveStack<T>>, IClearable<IReactiveStack<T>>, IPeekable<T>, IReleasable
+    public interface IReactiveStack<T> : IReadOnlyCollection<IReactiveProperty<T>>, IChangeable<IReactiveStack<T>>, IClearable<IReactiveStack<T>>, IPeekable<T>, IReleasable, IResettable
     {
         /// <summary>
         /// Pushes item to the stack top, triggering both OnChange and OnPush bindings, on that order

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Gaze.Utilities;
 
 namespace Gaze.MCS
@@ -9,6 +10,7 @@ namespace Gaze.MCS
     public class ReactiveQueue<T> : IReactiveQueue<T>
     {
         readonly Queue<IReactiveProperty<T>> internalQueue;
+        readonly Queue<IReactiveProperty<T>> initialCollection;
 
         readonly SafeAction<IReactiveQueue<T>> onChange = new SafeAction<IReactiveQueue<T>>();
         readonly SafeAction<IReactiveProperty<T>> onEnqueue = new SafeAction<IReactiveProperty<T>>();
@@ -35,7 +37,7 @@ namespace Gaze.MCS
         /// Instantiates a ReactiveQueue passing an existing collection
         /// </summary>
         /// <param name="queue">Collection to be used internally</param>
-        public ReactiveQueue(Queue<IReactiveProperty<T>> queue) => internalQueue = queue;
+        public ReactiveQueue(Queue<IReactiveProperty<T>> queue) => initialCollection = internalQueue = queue;
 
         /// <summary>
         /// Enqueues the passed item, triggering OnChange and OnEnqueue, on that order
@@ -147,5 +149,16 @@ namespace Gaze.MCS
         
         public IEnumerator<IReactiveProperty<T>> GetEnumerator() => internalQueue.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => internalQueue.GetEnumerator();
+        public void Reset()
+        {
+            internalQueue.Clear();
+            if (initialCollection != null)
+            {
+                foreach (var property in initialCollection)
+                {
+                    internalQueue.Enqueue(property);
+                }
+            }
+        }
     }
 }
