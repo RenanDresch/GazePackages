@@ -7,6 +7,7 @@ namespace Gaze.MCS
     {
         T Value { get; set; }
         void ForceUpdateValue();
+        void ForceUpdateWithValue(T value);
         IReactiveProperty<T> SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action);
         IReactiveProperty<T> SafeBindOnChangeActionWithInvocation(IDestroyable destroyable, Action<T> action);
         IReactiveProperty<T> UnbindOnChangeAction(Action<T> action);

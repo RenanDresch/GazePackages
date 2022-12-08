@@ -33,6 +33,11 @@ namespace Gaze.MCS
         {
             OnPropertyChangeEvent.Invoke(currentValue);
         }
+        
+        public void ForceUpdateWithValue(T value)
+        { 
+            SetProperty(ref currentValue, value, true);
+        }
 
         public IReactiveProperty<T> SafeBindOnChangeAction(IDestroyable destroyable, Action<T> action)
         {
