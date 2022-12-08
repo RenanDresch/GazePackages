@@ -10,5 +10,7 @@ namespace Gaze.MCS
         List<TK> Keys { get; }
         IReactiveDictionary<TK, TV> WithKeyCaching();
         void Add(TK key, TV value);
+        bool TryGetValue(TK key, out IReactiveProperty<TV> value);
+        bool ContainsKey(TK key);
     }
 }

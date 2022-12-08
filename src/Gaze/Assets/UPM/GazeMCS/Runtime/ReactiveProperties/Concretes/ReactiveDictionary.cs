@@ -101,14 +101,7 @@ namespace Gaze.MCS
             return false;
         }
 
-        protected override void ClearCollection() => internalDictionary.Clear();
-
-        public bool Contains(KeyValuePair<TK, IReactiveProperty<TV>> item) => internalDictionary.Contains(item);
-        
-        public List<TK> Keys => keysCache;
-        
-        public ICollection<IReactiveProperty<TV>> Values => internalDictionary.Values;
-        public void Reset()
+        protected override void ClearCollection()
         {
             internalDictionary.Clear();
 
@@ -116,6 +109,19 @@ namespace Gaze.MCS
             {
                 keysCache.Clear();
             }
+        }
+
+        public bool Contains(KeyValuePair<TK, IReactiveProperty<TV>> item) => internalDictionary.Contains(item);
+
+        public bool ContainsKey(TK key) => internalDictionary.ContainsKey(key);
+        
+        public List<TK> Keys => keysCache;
+        
+        public ICollection<IReactiveProperty<TV>> Values => internalDictionary.Values;
+
+        public void Reset()
+        {
+            ClearCollection();
             
             if (initialCollection != null)
             {
