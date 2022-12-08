@@ -11,7 +11,7 @@ namespace Gaze.MCS
         /// </summary>
         /// <param name="item">Item to be queued</param>
         /// <returns>Returns the collection</returns>
-        IReactiveQueue<T> Enqueue(IReactiveProperty<T> item);
+        IReactiveQueue<T> Enqueue(T item);
         /// <summary>
         /// Dequeues the front item
         /// </summary>
@@ -31,5 +31,7 @@ namespace Gaze.MCS
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when an item gets popped from the stack.</param>
         IReactiveQueue<T> SafeBindOnDequeueAction(IDestroyable destroyable, Action<IReactiveProperty<T>> action);
+
+        bool TryDequeue(out IReactiveProperty<T> item);
     }
 }

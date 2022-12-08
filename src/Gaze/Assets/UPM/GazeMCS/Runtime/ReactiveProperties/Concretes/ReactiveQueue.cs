@@ -44,11 +44,12 @@ namespace Gaze.MCS
         /// </summary>
         /// <param name="item">Item to be queued</param>
         /// <returns>The ReactiveQueue itself</returns>
-        public IReactiveQueue<T> Enqueue(IReactiveProperty<T> item)
+        public IReactiveQueue<T> Enqueue(T item)
         {
-            internalQueue.Enqueue(item);
+            var reactiveProperty = new ReactiveProperty<T>(item);
+            internalQueue.Enqueue(reactiveProperty);
             onChange.Invoke(this);
-            onEnqueue.Invoke(item);
+            onEnqueue.Invoke(reactiveProperty);
             return this;
         }
 
@@ -66,6 +67,11 @@ namespace Gaze.MCS
                 onClear.Invoke();
             }
             return item;
+        }
+
+        public bool TryDequeue(out IReactiveProperty<T> item)
+        {
+            return internalQueue.TryDequeue(out item);
         }
         
         /// <summary>
