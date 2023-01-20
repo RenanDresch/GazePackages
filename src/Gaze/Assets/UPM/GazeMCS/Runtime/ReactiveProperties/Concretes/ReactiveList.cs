@@ -39,6 +39,13 @@ namespace Gaze.MCS
             return (key, value);
         }
 
+        public void Add(IReactiveProperty<T> item)
+        {
+            var key = internalList.Count;
+            internalList.Add(item);
+            OnCreateIndex(key, item);
+        }
+        
         protected override (bool, int key, IReactiveProperty<T> value) RemoveFromCollection(T item)
         {
             var itemIndex = IndexOf(item);
@@ -50,6 +57,11 @@ namespace Gaze.MCS
             }
 
             return (itemIndex != -1, itemIndex, value);
+        }
+
+        public bool Remove(IReactiveProperty<T> item)
+        {
+            return internalList.Remove(item);
         }
 
         public override bool Contains(T item) => IndexOf(item) != -1;
@@ -69,18 +81,18 @@ namespace Gaze.MCS
             return -1;
         }
 
-        public void Insert(int index, T item)
+        public void Insert(int index, IReactiveProperty<T> item)
         {
-            var newReactiveItem = new ReactiveProperty<T>(item);
-            internalList.Insert(index, newReactiveItem);
-            onInsert.Invoke((index, newReactiveItem));
+            internalList.Insert(index, item);
+            onInsert.Invoke((index, item));
         }
 
-        public void RemoveAt(int index)
+        public IReactiveProperty<T> RemoveAt(int index)
         {
             var removedItem = internalList[index];
             internalList.RemoveAt(index);
             onRemoveAt.Invoke((index, removedItem));
+            return removedItem;
         }
 
         public IReactiveList<T> SafeBindOnInsertAction(IDestroyable destroyable, Action<(int, IReactiveProperty<T>)> action)
