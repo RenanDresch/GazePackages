@@ -5,6 +5,7 @@ namespace Gaze.MCS
 {
     public abstract class ReactiveImplementation<TI> : BuilderImplementation<TI>, IChangeable<TI>, IReleasable
     {
+        //Todo: implement this, currently, this leads nowhere...
         protected readonly SafeAction<TI> OnChange = new SafeAction<TI>();
         public TI SafeBindOnChangeAction(IDestroyable destroyable, Action<TI> action)
         {

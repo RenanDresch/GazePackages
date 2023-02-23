@@ -9,6 +9,7 @@ namespace Gaze.MCS
     {
         readonly SafeAction<TK, IReactiveProperty<T>> onAdd = new SafeAction<TK, IReactiveProperty<T>>();
         readonly SafeAction<TK, IReactiveProperty<T>> onRemove = new SafeAction<TK, IReactiveProperty<T>>();
+        readonly SafeAction<TK, IReactiveProperty<T>, IReactiveProperty<T>> onReplace = new SafeAction<TK, IReactiveProperty<T>, IReactiveProperty<T>>();
         readonly SafeAction onClear = new SafeAction();
 
         public abstract int Count { get; }
@@ -18,7 +19,15 @@ namespace Gaze.MCS
             base.OnCreateIndex(key, value);
             onAdd.Invoke(key, value);
         }
-        
+
+        protected override void IndexReplacer(TK key, IReactiveProperty<T> replacedValue, IReactiveProperty<T> newValue)
+        {
+            IndexSetter(key, newValue);
+            onRemove.Invoke(key, replacedValue);
+            onAdd.Invoke(key, newValue);
+            onReplace.Invoke(key, replacedValue, newValue);
+        }
+
         public void Add(TA item)
         {
             var (key, value) = AddToCollection(item);

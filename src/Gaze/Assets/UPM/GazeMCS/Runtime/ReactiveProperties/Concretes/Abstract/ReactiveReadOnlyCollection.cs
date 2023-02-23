@@ -6,7 +6,7 @@ namespace Gaze.MCS
         ReactiveComparable<TI, T>,
         IReactiveIndexable<TI, TK, T>
     {
-        protected Func<T> GetDefaultValue { get; private set; }
+        protected Func<T> GetDefaultValue { get; set; }
 
         protected ReactiveReadOnlyCollection() => GetDefaultValue = DefaultValueGetter;
 
@@ -26,6 +26,17 @@ namespace Gaze.MCS
 
                 return value;
             }
+            set
+            {
+                if (TryGetValue(index, out var existingValue))
+                {
+                    IndexReplacer(index, existingValue, value);
+                }
+                else
+                {
+                    OnCreateIndex(index, value);
+                }
+            }
         }
 
         static T DefaultValueGetter() => default;
@@ -40,5 +51,6 @@ namespace Gaze.MCS
         protected abstract IReactiveProperty<T> IndexGetter(TK index);
         protected virtual void OnCreateIndex(TK index, IReactiveProperty<T> value) => IndexSetter(index, value);
         protected abstract void IndexSetter(TK index, IReactiveProperty<T> value);
+        protected abstract void IndexReplacer(TK index, IReactiveProperty<T> replacedValue, IReactiveProperty<T> newValue);
     }
 }
