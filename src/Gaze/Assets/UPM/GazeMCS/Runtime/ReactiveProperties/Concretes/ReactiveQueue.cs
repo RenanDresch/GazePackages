@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Gaze.Utilities;
 
 namespace Gaze.MCS
@@ -9,12 +8,12 @@ namespace Gaze.MCS
     [Serializable]
     public class ReactiveQueue<T> : IReactiveQueue<T>
     {
-        readonly Queue<IReactiveProperty<T>> internalQueue;
-        readonly Queue<IReactiveProperty<T>> initialCollection;
+        readonly Queue<T> internalQueue;
+        readonly Queue<T> initialCollection;
 
         readonly SafeAction<IReactiveQueue<T>> onChange = new SafeAction<IReactiveQueue<T>>();
-        readonly SafeAction<IReactiveProperty<T>> onEnqueue = new SafeAction<IReactiveProperty<T>>();
-        readonly SafeAction<IReactiveProperty<T>> onDequeue = new SafeAction<IReactiveProperty<T>>();
+        readonly SafeAction<T> onEnqueue = new SafeAction<T>();
+        readonly SafeAction<T> onDequeue = new SafeAction<T>();
         readonly SafeAction onClear = new SafeAction();
 
         /// <summary>
@@ -25,19 +24,19 @@ namespace Gaze.MCS
         /// <summary>
         /// Peeks the internal Queue
         /// </summary>
-        public IReactiveProperty<T> Peek => internalQueue.Peek();
+        public T Peek => internalQueue.Peek();
 
         /// <summary>
         /// Instantiates a ReactiveQueue with the required capacity
         /// </summary>
         /// <param name="capacity">Queue capacity</param>
-        public ReactiveQueue(int capacity) => internalQueue = new Queue<IReactiveProperty<T>>(capacity);
+        public ReactiveQueue(int capacity) => internalQueue = new Queue<T>(capacity);
 
         /// <summary>
         /// Instantiates a ReactiveQueue passing an existing collection
         /// </summary>
         /// <param name="queue">Collection to be used internally</param>
-        public ReactiveQueue(Queue<IReactiveProperty<T>> queue) => initialCollection = internalQueue = queue;
+        public ReactiveQueue(Queue<T> queue) => initialCollection = internalQueue = queue;
 
         /// <summary>
         /// Enqueues the passed item, triggering OnChange and OnEnqueue, on that order
@@ -46,10 +45,9 @@ namespace Gaze.MCS
         /// <returns>The ReactiveQueue itself</returns>
         public IReactiveQueue<T> Enqueue(T item)
         {
-            var reactiveProperty = new ReactiveProperty<T>(item);
-            internalQueue.Enqueue(reactiveProperty);
+            internalQueue.Enqueue(item);
             onChange.Invoke(this);
-            onEnqueue.Invoke(reactiveProperty);
+            onEnqueue.Invoke(item);
             return this;
         }
 
@@ -57,7 +55,7 @@ namespace Gaze.MCS
         /// Dequeues the front item, triggering OnChange, OnDequeue and OnClear if Queue becomes empty, on that order
         /// </summary>
         /// <returns>Returns the dequeued item</returns>
-        public IReactiveProperty<T> Dequeue()
+        public T Dequeue()
         {
             var item = internalQueue.Dequeue();
             onChange.Invoke(this);
@@ -69,7 +67,7 @@ namespace Gaze.MCS
             return item;
         }
 
-        public bool TryDequeue(out IReactiveProperty<T> item)
+        public bool TryDequeue(out T item)
         {
             return internalQueue.TryDequeue(out item);
         }
@@ -110,7 +108,7 @@ namespace Gaze.MCS
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when a new item gets enqueued.</param>
         /// <returns>The ReactiveQueue itself</returns>
-        public IReactiveQueue<T> SafeBindOnEnqueueAction(IDestroyable destroyable, Action<IReactiveProperty<T>> action)
+        public IReactiveQueue<T> SafeBindOnEnqueueAction(IDestroyable destroyable, Action<T> action)
         {
             onEnqueue.SafeBind(destroyable, action);
             return this;
@@ -123,7 +121,7 @@ namespace Gaze.MCS
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when an item gets popped from the stack.</param>
         /// <returns>The ReactiveQueue itself</returns>
-        public IReactiveQueue<T> SafeBindOnDequeueAction(IDestroyable destroyable, Action<IReactiveProperty<T>> action)
+        public IReactiveQueue<T> SafeBindOnDequeueAction(IDestroyable destroyable, Action<T> action)
         {
             onDequeue.SafeBind(destroyable, action);
             return this;
@@ -153,7 +151,7 @@ namespace Gaze.MCS
             onClear.Release();
         }
         
-        public IEnumerator<IReactiveProperty<T>> GetEnumerator() => internalQueue.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => internalQueue.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => internalQueue.GetEnumerator();
         public void Reset()
         {

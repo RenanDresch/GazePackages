@@ -7,8 +7,6 @@ namespace Gaze.MCS
     {
         int IndexOf(T item);
         void Insert(int index, T item);
-        void Add(T item);
-        bool Remove(T item);
         T RemoveAt(int index);
         IReactiveList<T> SafeBindOnInsertAction(IDestroyable destroyable, Action<(int, T)> action);
         IReactiveList<T> UnbindOnInsertAction(Action<(int, T)> action);

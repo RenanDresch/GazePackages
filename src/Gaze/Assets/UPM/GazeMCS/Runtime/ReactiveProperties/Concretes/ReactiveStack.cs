@@ -9,12 +9,12 @@ namespace Gaze.MCS
     [Serializable]
     public class ReactiveStack<T> : IReactiveStack<T>
     {
-        readonly Stack<IReactiveProperty<T>> internalStack;
-        readonly Stack<IReactiveProperty<T>> initialCollection;
+        readonly Stack<T> internalStack;
+        readonly Stack<T> initialCollection;
 
         readonly SafeAction<IReactiveStack<T>> onChange = new SafeAction<IReactiveStack<T>>();
-        readonly SafeAction<IReactiveProperty<T>> onPush = new SafeAction<IReactiveProperty<T>>();
-        readonly SafeAction<IReactiveProperty<T>> onPop = new SafeAction<IReactiveProperty<T>>();
+        readonly SafeAction<T> onPush = new SafeAction<T>();
+        readonly SafeAction<T> onPop = new SafeAction<T>();
         readonly SafeAction onClear = new SafeAction();
 
         /// <summary>
@@ -25,26 +25,26 @@ namespace Gaze.MCS
         /// <summary>
         /// Peeks the internal Stack 
         /// </summary>
-        public IReactiveProperty<T> Peek => internalStack.Peek();
+        public T Peek => internalStack.Peek();
         
         /// <summary>
         /// Instantiates a ReactiveStack with the required capacity
         /// </summary>
         /// <param name="capacity">Stack capacity</param>
-        public ReactiveStack(int capacity) => internalStack = new Stack<IReactiveProperty<T>>(capacity);
+        public ReactiveStack(int capacity) => internalStack = new Stack<T>(capacity);
         
         /// <summary>
         /// Instantiates a ReactiveStack passing an existing collection
         /// </summary>
         /// <param name="stack">Collection to be used internally</param>
-        public ReactiveStack(Stack<IReactiveProperty<T>> stack) => initialCollection = internalStack = stack;
+        public ReactiveStack(Stack<T> stack) => initialCollection = internalStack = stack;
         
         /// <summary>
         /// Pushes item to the stack top, triggering both OnChange and OnPush bindings, on that order
         /// </summary>
         /// <param name="item"></param>
         /// <returns>The ReactiveStack itself</returns>
-        public IReactiveStack<T> Push(IReactiveProperty<T> item)
+        public IReactiveStack<T> Push(T item)
         {
             internalStack.Push(item);
             onChange.Invoke(this);
@@ -56,7 +56,7 @@ namespace Gaze.MCS
         /// Pops item from the stack top, triggering OnPop, OnChange and OnClear if stack becomes empty, on that order
         /// </summary>
         /// <returns>The popped item</returns>
-        public IReactiveProperty<T> Pop()
+        public T Pop()
         {
             var item = internalStack.Pop();
             onChange.Invoke(this);
@@ -104,7 +104,7 @@ namespace Gaze.MCS
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when a new item gets pushed into the stack.</param>
         /// <returns>The ReactiveStack itself</returns>
-        public IReactiveStack<T> SafeBindOnPushAction(IDestroyable destroyable, Action<IReactiveProperty<T>> action)
+        public IReactiveStack<T> SafeBindOnPushAction(IDestroyable destroyable, Action<T> action)
         {
             onPush.SafeBind(destroyable, action);
             return this;
@@ -117,7 +117,7 @@ namespace Gaze.MCS
         /// <param name="destroyable">The destroyable object that owns the target action.</param>
         /// <param name="action">The action to execute when an item gets popped from the stack.</param>
         /// <returns>The ReactiveStack itself</returns>
-        public IReactiveStack<T> SafeBindOnPopAction(IDestroyable destroyable, Action<IReactiveProperty<T>> action)
+        public IReactiveStack<T> SafeBindOnPopAction(IDestroyable destroyable, Action<T> action)
         {
             onPop.SafeBind(destroyable, action);
             return this;
@@ -147,7 +147,7 @@ namespace Gaze.MCS
             onClear.Release();
         }
         
-        public IEnumerator<IReactiveProperty<T>> GetEnumerator() => internalStack.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => internalStack.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => internalStack.GetEnumerator();
         public void Reset()
         {

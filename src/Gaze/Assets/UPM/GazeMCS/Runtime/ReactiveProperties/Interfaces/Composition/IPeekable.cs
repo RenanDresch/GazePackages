@@ -2,6 +2,6 @@
 {
     public interface IPeekable<T>
     {
-        IReactiveProperty<T> Peek { get; }
+        T Peek { get; }
     }
 }
