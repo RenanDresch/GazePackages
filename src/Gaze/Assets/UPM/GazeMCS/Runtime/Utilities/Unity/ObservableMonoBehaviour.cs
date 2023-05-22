@@ -45,5 +45,10 @@ namespace Gaze.Utilities
             OnDisableEvent = null;
             OnDestroyEvent = null;
         }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
 }
