@@ -9,24 +9,21 @@ namespace Gaze.MCS
         ReactiveCollection<IReactiveDictionary<TK, TV>, TK, TV, (TK key,TV value), TK>,
         IReactiveDictionary<TK, TV>
     {
-        readonly Dictionary<TK, IReactiveProperty<TV>> internalDictionary;
-        readonly Dictionary<TK, IReactiveProperty<TV>> initialCollection;
-
+        readonly Dictionary<TK, TV> internalDictionary;
+        
         bool cachingKeys;
         int initialCapacity;
-        List<TK> keysCache; 
+        List<TK> keysCache;
 
         public ReactiveDictionary(int capacity)
         {
             initialCapacity = capacity;
-            internalDictionary = new Dictionary<TK, IReactiveProperty<TV>>(capacity);
+            internalDictionary = new Dictionary<TK, TV>(capacity);
         }
 
-
-        public ReactiveDictionary(Dictionary<TK, IReactiveProperty<TV>> collection)
+        public ReactiveDictionary(Dictionary<TK, TV> collection)
         {
             initialCapacity = collection.Count;
-            initialCollection = internalDictionary = collection;
         }
 
         public IReactiveDictionary<TK, TV> WithKeyCaching()
@@ -43,11 +40,12 @@ namespace Gaze.MCS
         
         protected override IReactiveDictionary<TK, TV> Builder => this;
         
-        public override bool TryGetValue(TK index, out IReactiveProperty<TV> value) =>
+        public override bool TryGetValue(TK index, out TV value) =>
             internalDictionary.TryGetValue(index, out value);
-        protected override IReactiveProperty<TV> IndexGetter(TK index) => internalDictionary[index];
+        
+        protected override TV IndexGetter(TK index) => internalDictionary[index];
 
-        protected override void IndexSetter(TK index, IReactiveProperty<TV> value)
+        protected override void IndexSetter(TK index, TV value)
         {
             if (cachingKeys && !internalDictionary.ContainsKey(index))
             {
@@ -60,21 +58,19 @@ namespace Gaze.MCS
 
         public void Add(TK key, TV value) => AddToCollection((key, value));
 
-        protected override (TK key, IReactiveProperty<TV> value) AddToCollection((TK key, TV value) item)
+        protected override (TK key, TV value) AddToCollection((TK key, TV value) item)
         {
-            var reactiveValue = new ReactiveProperty<TV>(item.value);
-
             if (cachingKeys)
             {
                 keysCache.Add(item.key);
             }
            
-            internalDictionary.Add(item.key, reactiveValue);
-            OnCreateIndex(item.key, reactiveValue);
-            return (item.key, reactiveValue);
+            internalDictionary.Add(item.key, item.value);
+            OnCreateIndex(item.key, item.value);
+            return (item.key, item.value);
         }
 
-        protected override (bool, TK key, IReactiveProperty<TV> value) RemoveFromCollection(TK key)
+        protected override (bool, TK key, TV value) RemoveFromCollection(TK key)
         {
             var success = TryGetValue(key, out var value);
 
@@ -89,9 +85,9 @@ namespace Gaze.MCS
 
         public override bool Contains(TV item)
         {
-            foreach (var reactiveProperty in internalDictionary.Values)
+            foreach (var value in internalDictionary.Values)
             {
-                if (reactiveProperty.CurrentValueIs(item))
+                if (EqualityComparer<TV>.Default.Equals(value, item))
                 {
                     return true;
                 }
@@ -110,25 +106,17 @@ namespace Gaze.MCS
             }
         }
 
-        public bool Contains(KeyValuePair<TK, IReactiveProperty<TV>> item) => internalDictionary.Contains(item);
+        public bool Contains(KeyValuePair<TK, TV> item) => internalDictionary.Contains(item);
 
         public bool ContainsKey(TK key) => internalDictionary.ContainsKey(key);
         
         public List<TK> Keys => keysCache;
         
-        public ICollection<IReactiveProperty<TV>> Values => internalDictionary.Values;
+        public ICollection<TV> Values => internalDictionary.Values;
 
         public void Reset()
         {
             ClearCollection();
-            
-            if (initialCollection != null)
-            {
-                foreach (var (key, value) in initialCollection)
-                {
-                    internalDictionary.Add(key, value);
-                }
-            }
         }
     }
 }

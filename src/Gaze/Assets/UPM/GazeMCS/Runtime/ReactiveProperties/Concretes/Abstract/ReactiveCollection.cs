@@ -7,20 +7,20 @@ namespace Gaze.MCS
         ReactiveReadOnlyCollection<TI, TK, T>,
         IReactiveCollection<TI, TK, T, TA, TR>
     {
-        readonly SafeAction<TK, IReactiveProperty<T>> onAdd = new SafeAction<TK, IReactiveProperty<T>>();
-        readonly SafeAction<TK, IReactiveProperty<T>> onRemove = new SafeAction<TK, IReactiveProperty<T>>();
-        readonly SafeAction<TK, IReactiveProperty<T>, IReactiveProperty<T>> onReplace = new SafeAction<TK, IReactiveProperty<T>, IReactiveProperty<T>>();
+        readonly SafeAction<TK, T> onAdd = new SafeAction<TK, T>();
+        readonly SafeAction<TK, T> onRemove = new SafeAction<TK, T>();
+        readonly SafeAction<TK, T, T> onReplace = new SafeAction<TK, T, T>();
         readonly SafeAction onClear = new SafeAction();
 
         public abstract int Count { get; }
         
-        protected override void OnCreateIndex(TK key, IReactiveProperty<T> value)
+        protected override void OnCreateIndex(TK key, T value)
         {
             base.OnCreateIndex(key, value);
             onAdd.Invoke(key, value);
         }
 
-        protected override void IndexReplacer(TK key, IReactiveProperty<T> replacedValue, IReactiveProperty<T> newValue)
+        protected override void IndexReplacer(TK key, T replacedValue, T newValue)
         {
             IndexSetter(key, newValue);
             onRemove.Invoke(key, replacedValue);
@@ -28,15 +28,15 @@ namespace Gaze.MCS
             onReplace.Invoke(key, replacedValue, newValue);
         }
 
-        public void Add(TA item)
+        public virtual void Add(TA item)
         {
             var (key, value) = AddToCollection(item);
             onAdd.Invoke(key, value);
         }
 
-        protected abstract (TK key, IReactiveProperty<T> value) AddToCollection(TA item);
+        protected abstract (TK key, T value) AddToCollection(TA item);
 
-        public bool Remove(TR item)
+        public virtual bool Remove(TR item)
         {
             var (success, key, value) = RemoveFromCollection(item);
             if (success)
@@ -46,7 +46,7 @@ namespace Gaze.MCS
             return success;
         }
         
-        protected abstract (bool, TK key, IReactiveProperty<T> value) RemoveFromCollection(TR item);
+        protected abstract (bool, TK key, T value) RemoveFromCollection(TR item);
 
         public abstract bool Contains(T item);
 
@@ -58,25 +58,25 @@ namespace Gaze.MCS
 
         protected abstract void ClearCollection();
         
-        public TI SafeBindOnAddAction(IDestroyable destroyable, Action<TK, IReactiveProperty<T>> action)
+        public TI SafeBindOnAddAction(IDestroyable destroyable, Action<TK, T> action)
         {
             onAdd.SafeBind(destroyable, action);
             return Builder;
         }
 
-        public TI UnbindOnAddAction(Action<TK, IReactiveProperty<T>> action)
+        public TI UnbindOnAddAction(Action<TK, T> action)
         {
             onAdd.Unbind(action);
             return Builder;
         }
 
-        public TI SafeBindOnRemoveAction(IDestroyable destroyable, Action<TK, IReactiveProperty<T>> action)
+        public TI SafeBindOnRemoveAction(IDestroyable destroyable, Action<TK, T> action)
         {
             onRemove.SafeBind(destroyable, action);
             return Builder;
         }
 
-        public TI UnbindOnRemoveAction(Action<TK, IReactiveProperty<T>> action)
+        public TI UnbindOnRemoveAction(Action<TK, T> action)
         {
             onRemove.Unbind(action);
             return Builder;

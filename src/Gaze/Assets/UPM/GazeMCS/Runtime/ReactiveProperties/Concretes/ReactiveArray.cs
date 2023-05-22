@@ -7,28 +7,27 @@ namespace Gaze.MCS
     [Serializable]
     public class ReactiveArray<T> : ReactiveReadOnlyCollection<IReactiveArray<T>, int, T>, IReactiveArray<T>
     {
-        readonly IReactiveProperty<T>[] internalArray;
-        readonly IReactiveProperty<T>[] initialCollection;
-        readonly SafeAction<int, IReactiveProperty<T>> onSet = new SafeAction<int, IReactiveProperty<T>>();
-        readonly SafeAction<int, IReactiveProperty<T>, IReactiveProperty<T>> onReplace = new SafeAction<int, IReactiveProperty<T>, IReactiveProperty<T>>();
+        readonly T[] internalArray;
+        readonly SafeAction<int, T> onSet = new SafeAction<int, T>();
+        readonly SafeAction<int, T, T> onReplace = new SafeAction<int, T, T>();
         
         protected override IReactiveArray<T> Builder => this;
 
-        public override bool TryGetValue(int index, out IReactiveProperty<T> value)
+        public override bool TryGetValue(int index, out T value)
         {
             value = internalArray[index];
             return value != null;
         }
 
-        protected override IReactiveProperty<T> IndexGetter(int index) => internalArray[index];
+        protected override T IndexGetter(int index) => internalArray[index];
 
-        protected override void IndexSetter(int index, IReactiveProperty<T> value)
+        protected override void IndexSetter(int index, T value)
         {
             internalArray[index] = value;
             onSet.Invoke(index, value);
         }
 
-        protected override void IndexReplacer(int index, IReactiveProperty<T> replacedValue, IReactiveProperty<T> newValue
+        protected override void IndexReplacer(int index, T replacedValue, T newValue
         )
         {
             IndexSetter(index, newValue);
@@ -39,14 +38,14 @@ namespace Gaze.MCS
 
         public ReactiveArray(int lenght)
         {
-            internalArray = new IReactiveProperty<T>[lenght];
+            internalArray = new T[lenght];
             for (var i = 0; i < lenght; i++)
             {
                 internalArray[i] = new ReactiveProperty<T>(GetDefaultValue());
             }
         }
         
-        public ReactiveArray(IReactiveProperty<T>[] collection) => initialCollection = internalArray = collection;
+        public ReactiveArray(T[] collection) => internalArray = collection;
 
         public bool IsSynchronized => internalArray.IsSynchronized;
         public object SyncRoot => internalArray.SyncRoot;
@@ -57,13 +56,13 @@ namespace Gaze.MCS
         {
             for (var i = 0; i < internalArray.Length; i++)
             {
-                internalArray[i] = initialCollection != null ? initialCollection[i] : new ReactiveProperty<T>(GetDefaultValue());
+                internalArray[i] = GetDefaultValue();
             }
         }
 
         public IReactiveArray<T> SafeBindOnSetAction(
                 IDestroyable destroyable,
-                Action<int, IReactiveProperty<T>> action
+                Action<int, T> action
         )
         {
             onSet.SafeBind(
@@ -74,7 +73,7 @@ namespace Gaze.MCS
         }
 
         public IReactiveArray<T> UnbindOnSetAction(
-                Action<int, IReactiveProperty<T>> action
+                Action<int, T> action
         )
         {
             onSet.Unbind(action);
@@ -84,7 +83,7 @@ namespace Gaze.MCS
 
         public IReactiveArray<T> SafeBindOnReplaceAction(
                 IDestroyable destroyable,
-                Action<int, IReactiveProperty<T>, IReactiveProperty<T>> action
+                Action<int, T, T> action
         )
         {
             onReplace.SafeBind(
@@ -95,7 +94,7 @@ namespace Gaze.MCS
         }
 
         public IReactiveArray<T> UnbindOnReplaceAction(
-                Action<int, IReactiveProperty<T>, IReactiveProperty<T>> action
+                Action<int, T, T> action
         )
         {
             onReplace.Unbind(action);

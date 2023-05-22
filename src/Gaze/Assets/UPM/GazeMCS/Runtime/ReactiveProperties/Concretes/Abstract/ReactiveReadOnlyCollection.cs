@@ -10,7 +10,7 @@ namespace Gaze.MCS
 
         protected ReactiveReadOnlyCollection() => GetDefaultValue = DefaultValueGetter;
 
-        public IReactiveProperty<T> this[TK index]
+        public T this[TK index]
         {
             get
             {
@@ -20,7 +20,6 @@ namespace Gaze.MCS
                 }
                 else
                 {
-                    value = new ReactiveProperty<T>(GetDefaultValue());
                     OnCreateIndex(index, value);
                 }
 
@@ -47,10 +46,10 @@ namespace Gaze.MCS
             return Builder;
         }
 
-        public abstract bool TryGetValue(TK index, out IReactiveProperty<T> value);
-        protected abstract IReactiveProperty<T> IndexGetter(TK index);
-        protected virtual void OnCreateIndex(TK index, IReactiveProperty<T> value) => IndexSetter(index, value);
-        protected abstract void IndexSetter(TK index, IReactiveProperty<T> value);
-        protected abstract void IndexReplacer(TK index, IReactiveProperty<T> replacedValue, IReactiveProperty<T> newValue);
+        public abstract bool TryGetValue(TK index, out T value);
+        protected abstract T IndexGetter(TK index);
+        protected virtual void OnCreateIndex(TK index, T value) => IndexSetter(index, value);
+        protected abstract void IndexSetter(TK index, T value);
+        protected abstract void IndexReplacer(TK index, T replacedValue, T newValue);
     }
 }

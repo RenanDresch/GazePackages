@@ -28,5 +28,9 @@ namespace Gaze.MCS
         }
 
         public event Action OnDestroyEvent;
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
 }

@@ -13,9 +13,9 @@ namespace Gaze.MCS
         void Clear();
         
         
-        TI SafeBindOnAddAction(IDestroyable destroyable, Action<TK, IReactiveProperty<T>> action);
-        TI UnbindOnAddAction(Action<TK, IReactiveProperty<T>> action);
-        TI SafeBindOnRemoveAction(IDestroyable destroyable, Action<TK, IReactiveProperty<T>> action);
-        TI UnbindOnRemoveAction(Action<TK, IReactiveProperty<T>> action);
+        TI SafeBindOnAddAction(IDestroyable destroyable, Action<TK, T> action);
+        TI UnbindOnAddAction(Action<TK, T> action);
+        TI SafeBindOnRemoveAction(IDestroyable destroyable, Action<TK, T> action);
+        TI UnbindOnRemoveAction(Action<TK, T> action);
     }
 }

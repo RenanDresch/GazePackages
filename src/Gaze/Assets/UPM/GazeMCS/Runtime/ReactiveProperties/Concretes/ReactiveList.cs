@@ -7,49 +7,41 @@ namespace Gaze.MCS
     [Serializable]
     public class ReactiveList<T> : ReactiveCollection<IReactiveList<T>, int, T, T, T>, IReactiveList<T>
     {
-        readonly List<IReactiveProperty<T>> internalList;
-        readonly List<IReactiveProperty<T>> initialCollection;
+        readonly List<T> internalList;
+        readonly List<T> initialCollection;
         
-        readonly SafeAction<(int index, IReactiveProperty<T> newItem)> onInsert = new SafeAction<(int index, IReactiveProperty<T> newItem)>();
-        readonly SafeAction<(int index, IReactiveProperty<T> item)> onRemoveAt = new SafeAction<(int index, IReactiveProperty<T> item)>();
+        readonly SafeAction<(int index, T newItem)> onInsert = new SafeAction<(int index, T newItem)>();
+        readonly SafeAction<(int index, T item)> onRemoveAt = new SafeAction<(int index, T item)>();
 
-        public ReactiveList(int capacity) => internalList = new List<IReactiveProperty<T>>(capacity);
-        public ReactiveList(List<IReactiveProperty<T>> collection) => internalList = collection;
+        public ReactiveList(int capacity) => internalList = new List<T>(capacity);
+        public ReactiveList(List<T> collection) => internalList = collection;
 
         protected override IReactiveList<T> Builder => this;
         
-        public override bool TryGetValue(int index, out IReactiveProperty<T> value)
+        public override bool TryGetValue(int index, out T value)
         {
             value = internalList[index];
             return value != null;
         }
 
-        protected override IReactiveProperty<T> IndexGetter(int index) => internalList[index];
+        protected override T IndexGetter(int index) => internalList[index];
         
-        protected override void IndexSetter(int index, IReactiveProperty<T> value) => internalList[index] = value;
+        protected override void IndexSetter(int index, T value) => internalList[index] = value;
         
         public override int Count => internalList.Count;
 
-        protected override (int key, IReactiveProperty<T> value) AddToCollection(T item)
-        {
-            var key = internalList.Count;
-            var value = new ReactiveProperty<T>(item);
-            internalList.Add(value);
-            OnCreateIndex(key, value);
-            return (key, value);
-        }
-
-        public void Add(IReactiveProperty<T> item)
+        protected override (int key, T value) AddToCollection(T item)
         {
             var key = internalList.Count;
             internalList.Add(item);
             OnCreateIndex(key, item);
+            return (key, item);
         }
-        
-        protected override (bool, int key, IReactiveProperty<T> value) RemoveFromCollection(T item)
+
+        protected override (bool, int key, T value) RemoveFromCollection(T item)
         {
             var itemIndex = IndexOf(item);
-            var value = itemIndex != -1 ? internalList[itemIndex] : null;
+            var value = itemIndex != -1 ? internalList[itemIndex] : default;
             
             if (itemIndex != -1)
             {
@@ -57,11 +49,6 @@ namespace Gaze.MCS
             }
 
             return (itemIndex != -1, itemIndex, value);
-        }
-
-        public bool Remove(IReactiveProperty<T> item)
-        {
-            return internalList.Remove(item);
         }
 
         public override bool Contains(T item) => IndexOf(item) != -1;
@@ -72,7 +59,7 @@ namespace Gaze.MCS
         {
             for (var i = 0; i < internalList.Count; i++)
             {
-                if (internalList[i].CurrentValueIs(item))
+                if (EqualityComparer<T>.Default.Equals(internalList[i],item))
                 {
                     return i;
                 }
@@ -81,13 +68,13 @@ namespace Gaze.MCS
             return -1;
         }
 
-        public void Insert(int index, IReactiveProperty<T> item)
+        public void Insert(int index, T item)
         {
             internalList.Insert(index, item);
             onInsert.Invoke((index, item));
         }
 
-        public IReactiveProperty<T> RemoveAt(int index)
+        public T RemoveAt(int index)
         {
             var removedItem = internalList[index];
             internalList.RemoveAt(index);
@@ -95,25 +82,25 @@ namespace Gaze.MCS
             return removedItem;
         }
 
-        public IReactiveList<T> SafeBindOnInsertAction(IDestroyable destroyable, Action<(int, IReactiveProperty<T>)> action)
+        public IReactiveList<T> SafeBindOnInsertAction(IDestroyable destroyable, Action<(int, T)> action)
         {
             onInsert.SafeBind(destroyable, action);
             return Builder;
         }
 
-        public IReactiveList<T> UnbindOnInsertAction(Action<(int, IReactiveProperty<T>)> action)
+        public IReactiveList<T> UnbindOnInsertAction(Action<(int, T)> action)
         {
             onInsert.Unbind(action);
             return this;
         }
 
-        public IReactiveList<T> SafeBindOnRemoveAtAction(IDestroyable destroyable, Action<(int, IReactiveProperty<T>)> action)
+        public IReactiveList<T> SafeBindOnRemoveAtAction(IDestroyable destroyable, Action<(int, T)> action)
         {
             onRemoveAt.SafeBind(destroyable, action);
             return Builder;
         }
 
-        public IReactiveList<T> UnbindOnRemoveAtAction(Action<(int, IReactiveProperty<T>)> action)
+        public IReactiveList<T> UnbindOnRemoveAtAction(Action<(int, T)> action)
         {
             onRemoveAt.Unbind(action);
             return this;

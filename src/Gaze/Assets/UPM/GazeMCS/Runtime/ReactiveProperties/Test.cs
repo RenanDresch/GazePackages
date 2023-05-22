@@ -6,16 +6,27 @@ namespace Gaze.MCS
 {
     public class Test : MonoBehaviour, IDestroyable
     {
-        readonly IReactiveDictionary<Guid, Vector3> transformMap = new ReactiveDictionary<Guid, Vector3>(16)
-            .WithCustomDefaultValueGetter(() => Vector3.one)
-            .WithCustomComparer(GarbageFreeComparers.Vector3Comparer);
+        readonly IReactiveDictionary<Guid, IReactiveProperty<Vector3>>
+            transformMap
+                = new ReactiveDictionary<Guid,
+                        IReactiveProperty<Vector3>>(16)
+                    .WithCustomDefaultValueGetter(GetDefault);
+
+        static IReactiveProperty<Vector3> GetDefault()
+        {
+            var defaultProperty = new ReactiveProperty<Vector3>(
+                Vector3.one);
+            defaultProperty.WithCustomComparer(
+                GarbageFreeComparers.Vector3Comparer);
+            return defaultProperty;
+        }
 
         void Awake()
         {
             transformMap.SafeBindOnAddAction(this, OnAdd);
             var guid = Guid.NewGuid();
             Debug.Log(transformMap[guid].Value);
-            transformMap.Add(Guid.NewGuid(), Vector3.up);
+            transformMap.Add(Guid.NewGuid(), GetDefault());
         }
 
         void OnAdd(Guid id, IReactiveProperty<Vector3> reactivePosition)
@@ -33,6 +44,10 @@ namespace Gaze.MCS
         }
 
         public event Action OnDestroyEvent;
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
     
     public static class GarbageFreeComparers
