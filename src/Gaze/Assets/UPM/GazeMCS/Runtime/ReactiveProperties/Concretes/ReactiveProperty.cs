@@ -75,7 +75,11 @@ namespace Gaze.MCS
 
         public void UnbindOnChangeAction(Action<T> action) => OnPropertyChangeEvent.Unbind(action);
 
-        public override void Release() => OnPropertyChangeEvent.Release();
+        public override void Release()
+        {
+            OnPropertyChangeEvent.Release();
+            OnPropertyReplaceEvent.Release();
+        }
         
         public void ForceUpdateValue(T newValue) => SetProperty(ref currentValue, newValue, true);
 
