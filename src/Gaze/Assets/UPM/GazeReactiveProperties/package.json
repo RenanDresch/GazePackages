@@ -1,0 +1,21 @@
+{
+  "name": "gaze.reactive-properties",
+  "version": "0.0.1",
+  "displayName": "Gaze Reactive Properties",
+  "description": "Safe and easy to use reactive properties for Unity",
+  "unity": "2019.1",
+  "dependencies": {},
+  "keywords": [
+    "gaze",
+    "reactive",
+    "architecture",
+    "framework"
+  ],
+  "author": {
+    "name": "Renan Dresch",
+    "email": "renandreschmartins@gmail.com",
+    "url": "https://github.com/RenanDresch/GazePackages.git?path=src/Gaze/Assets/UPM/GazeMVVM"
+  },
+  "license": "MIT",
+  "category": "Architechture"
+}
