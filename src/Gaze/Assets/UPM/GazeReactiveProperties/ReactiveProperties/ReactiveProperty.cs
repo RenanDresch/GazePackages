@@ -12,33 +12,43 @@ namespace Gaze.ReactiveProperties
 			set => SetValue(value);
 		}
 
-		public readonly Binder<TValue> OnChange = new();
-		public readonly Binder<TValue, TValue> OnReplace = new();
+		public ReactivePropertyBinder<TValue> Binder = new();
 		
 		void SetValue(
 			TValue value
 		)
 		{
 			DisposedCheck();
-			var oldValue = Value;
+			var oldValue = internalValue;
 			
-			if (Comparer.IsEquals(Value, value))
+			if (Comparer.IsEquals(internalValue, value))
 			{
 				return;
 			}
 			
-			Value = value;
+			internalValue = value;
 			
-			OnChange.Invoke(Value);
-			OnReplace.Invoke(Value, oldValue);
+			Binder.OnChange.Invoke(internalValue);
+			Binder.OnReplace.Invoke(internalValue, oldValue);
 		}
 
 		internal override void OnDispose()
 		{
+			Binder.Dispose();
+		}
+		
+		public static implicit operator TValue(ReactiveProperty<TValue> reactiveProperty) => reactiveProperty.internalValue;
+	}
+
+	public class ReactivePropertyBinder<TValue> : IDisposable
+	{
+		public readonly Binder<TValue> OnChange = new();
+		public readonly Binder<TValue, TValue> OnReplace = new();
+		
+		public void Dispose()
+		{
 			OnChange.Dispose();
 			OnReplace.Dispose();
 		}
-		
-		public static implicit operator TValue(ReactiveProperty<TValue> reactiveProperty) => reactiveProperty.Value;
 	}
 }

@@ -2,7 +2,7 @@
     "name": "Gaze.MCS.ReactiveProperties",
     "rootNamespace": "Gaze.MCS",
     "references": [
-        "GUID:2be934121279aab448d52eb4c256e364"
+        "GUID:f2edf412b1a484b7383fa43ff3be40a1"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
